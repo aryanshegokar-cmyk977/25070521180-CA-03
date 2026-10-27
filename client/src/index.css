@@ -297,3 +297,34 @@ textarea { resize: vertical; min-height: 6rem; }
   .profile-stats div { flex: 1; min-width: 0; }
   .profile-forms { grid-template-columns: 1fr; }
 }
+
+/* ---------- Admin ---------- */
+.admin-tabs { max-width: 360px; }
+.admin-form { margin-bottom: 1.5rem; }
+.admin-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.admin-row { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; flex-wrap: wrap; }
+.admin-row-info { flex: 1; min-width: 180px; display: flex; flex-direction: column; }
+.section-title { margin-top: 1.5rem; }
+
+.book-form-top { display: grid; grid-template-columns: 140px 1fr; gap: 1.5rem; align-items: start; }
+.book-form-preview .book-cover { font-size: 0.7rem; }
+.chapter-editor { display: flex; flex-direction: column; gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+.chapter-editor label { display: flex; flex-direction: column; gap: 0.3rem; font-weight: 600; font-size: 0.9rem; }
+.chapter-editor p { margin: 0; }
+.chapter-editor-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.6rem; }
+.chapter-editor-head h3 { margin: 0; }
+.chapter-editor-head select { width: auto; max-width: 260px; }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table th, .table td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.table th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); background: #faf9f6; }
+.table tr:last-child td { border-bottom: 0; }
+.table code { font-weight: 700; }
+.nowrap { flex-wrap: nowrap; }
+
+@media (max-width: 600px) {
+  .book-form-top { grid-template-columns: 1fr; }
+  .book-form-preview { width: 110px; }
+  .chapter-editor-head select { max-width: 100%; width: 100%; }
+}
