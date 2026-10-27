@@ -3,7 +3,6 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
-import ReadingHud from './ReadingHud';
 
 export default function Navbar() {
   const { logout } = useAuth();
@@ -26,7 +25,6 @@ export default function Navbar() {
         </Link>
 
         <div className="navbar-right">
-          <ReadingHud />
           <ThemeToggle />
           <button
             className="menu-toggle"

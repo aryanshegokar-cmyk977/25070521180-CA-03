@@ -1,15 +1,10 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import api, { errorMessage } from '../api';
 import { useAuth } from '../context/AuthContext';
-import { useStats } from '../context/StatsContext';
-import { celebrate } from '../celebrate';
 
 // "Buy Now" with a voucher code. Calls onBought() after a successful purchase.
 export default function BuyBox({ bookId, onBought }) {
   const { refreshUser } = useAuth();
-  const { refreshStats } = useStats();
-  const formRef = useRef(null);
-  const [shakes, setShakes] = useState(0); // bumps on every wrong code to replay the shake
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -21,26 +16,16 @@ export default function BuyBox({ bookId, onBought }) {
     try {
       const { data } = await api.post('/library/buy', { bookId, code });
       refreshUser().catch(() => {}); // updates "books owned" on the Profile page
-      refreshStats();
-      const box = formRef.current?.getBoundingClientRect();
-      if (box) celebrate(box.left + box.width / 2, box.top + box.height / 2);
       onBought?.(data.message);
     } catch (err) {
       setError(errorMessage(err));
-      setShakes((n) => n + 1);
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <form
-      ref={formRef}
-      key={shakes}
-      className={`buy-box ticket ${shakes ? 'shake' : ''}`}
-      onSubmit={handleBuy}
-    >
-      <span className="ticket-stub" aria-hidden="true">ADMIT ONE</span>
+    <form className="buy-box" onSubmit={handleBuy}>
       <label htmlFor={`voucher-${bookId}`}>Have a voucher code? Use it to buy this book.</label>
       <div className="buy-box-row">
         <input

@@ -7,13 +7,9 @@ import StarRating from '../components/StarRating';
 import Loader from '../components/Loader';
 import PaperScene from '../components/art/PaperScene';
 import Motif from '../components/art/Motif';
-import ProgressBar from '../components/ProgressBar';
-import { useStats } from '../context/StatsContext';
 
 export default function StorePage() {
   const { user } = useAuth();
-  const { stats } = useStats();
-  const next = stats?.continueReading;
   const [books, setBooks] = useState([]);
   const [genres, setGenres] = useState([]);
   const [search, setSearch] = useState('');
@@ -51,18 +47,6 @@ export default function StorePage() {
           <p>Pick a classic. The first chapter of every book is free to read.</p>
         </div>
       </section>
-
-      {next && (
-        <Link to={`/read/${next.book._id}/${next.chapter}`} className="continue-card card">
-          <BookCover book={next.book} size="small" />
-          <div className="continue-info">
-            <span className="eyebrow">Continue reading</span>
-            <h3>{next.book.title}</h3>
-            <ProgressBar read={next.chaptersRead} total={next.totalChapters} />
-          </div>
-          <span className="btn btn-primary">Chapter {next.chapter} →</span>
-        </Link>
-      )}
 
       <section className="store-toolbar">
         <h2>The shelf</h2>

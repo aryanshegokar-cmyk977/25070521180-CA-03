@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import api, { errorMessage } from '../api';
 import { useAuth } from '../context/AuthContext';
-import { useStats } from '../context/StatsContext';
 
 export default function ProfilePage() {
   const { user, ownedCount, setUser } = useAuth();
-  const { stats } = useStats();
 
   const [name, setName] = useState(user.name);
   const [nameMsg, setNameMsg] = useState(null);
@@ -63,36 +61,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </section>
-
-      {stats && (
-        <section className="library-card card">
-          <div className="library-card-head">
-            <h2>Reader's Library Card</h2>
-            <span className="library-card-no">No. {user.id.slice(-6).toUpperCase()}</span>
-          </div>
-          <div className="tracker-stats">
-            <div><strong>{stats.chaptersRead}</strong><span>Chapters read</span></div>
-            <div><strong>{stats.finished}</strong><span>Books finished</span></div>
-            <div><strong>🔥 {stats.streak}</strong><span>Day streak</span></div>
-            <div><strong>{stats.bestStreak}</strong><span>Best streak</span></div>
-          </div>
-          <h3>Stamps</h3>
-          <ul className="stamps">
-            {stats.stamps.map((stamp, i) => (
-              <li
-                key={stamp.id}
-                className={`stamp ${stamp.earned ? 'earned' : ''}`}
-                style={{ '--tilt': `${(i % 3) * 5 - 5}deg` }}
-                title={stamp.earned ? `Earned: ${stamp.hint}` : `Locked: ${stamp.hint}`}
-              >
-                <span className="stamp-icon" aria-hidden="true">{stamp.icon}</span>
-                <strong>{stamp.name}</strong>
-                <span className="small">{stamp.hint}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
 
       <div className="profile-forms">
         <form className="card form" onSubmit={saveName}>
