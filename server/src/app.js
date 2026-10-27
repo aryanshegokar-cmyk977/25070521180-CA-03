@@ -3,6 +3,8 @@ const cors = require('cors');
 const { notFound, errorHandler } = require('./middleware/error');
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
+const voucherRoutes = require('./routes/vouchers');
+const libraryRoutes = require('./routes/library');
 
 const app = express();
 
@@ -16,6 +18,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
+app.use('/api/vouchers', voucherRoutes);
+app.use('/api/library', libraryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
