@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Purchase = require('../models/Purchase');
 const { createToken, protect } = require('../middleware/auth');
 const { httpError } = require('../middleware/error');
+const { loginLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -45,10 +46,10 @@ async function loginAs(role, req, res) {
 }
 
 // POST /api/auth/login  - reader login
-router.post('/login', (req, res) => loginAs('user', req, res));
+router.post('/login', loginLimiter, (req, res) => loginAs('user', req, res));
 
 // POST /api/auth/admin/login  - admin login
-router.post('/admin/login', (req, res) => loginAs('admin', req, res));
+router.post('/admin/login', loginLimiter, (req, res) => loginAs('admin', req, res));
 
 // GET /api/auth/me  - who am I? (+ how many books I own, for the Profile page)
 router.get('/me', protect, async (req, res) => {

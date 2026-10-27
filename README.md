@@ -122,6 +122,7 @@ The website never touches the database directly. It sends requests to the server
 - **Passwords** are hashed with bcrypt: scrambled one way, so not even the database holds the real password.
 - **Logging in** gives you a **JWT token**: a signed pass with your user id and role, valid for 7 days. The website sends it with every request (`Authorization: Bearer ...`). It's signed with `JWT_SECRET`, so it can't be faked.
 - **Separate logins:** `/api/auth/login` only accepts readers and `/api/auth/admin/login` only accepts admins. Sign-up always creates readers; the only admin comes from the seed script.
+- **Guessing is limited** (`server/src/middleware/rateLimit.js`): after 10 wrong logins from one computer, or 10 wrong voucher codes from one reader, further attempts are refused for 15 minutes. Successful attempts never count.
 - **Server guards** (`server/src/middleware/auth.js`): `protect` (must be logged in, else 401), `adminOnly` (admin features, else 403), `usersOnly` (buying, library, writing reviews, else 403). The website hides pages too (`ProtectedRoute`), but the real protection is on the server.
 
 ### Locked chapters
@@ -387,6 +388,7 @@ All routes start with `/api`. 🔒 = needs login, 📖 = readers only, 👑 = ad
 | Website says "Cannot reach the server" | The server terminal isn't running. Start it with `npm run dev` in `server`. |
 | `'npm' is not recognized` | Node.js isn't installed, or the terminal was opened before installing. Close the terminal and open a new one. |
 | Port already in use | An old copy is still running. Close the other terminals, or restart the laptop. |
+| "Too many failed login attempts" / "Too many wrong voucher codes" | The guessing limit kicked in. Wait 15 minutes, or stop and restart the server (`Ctrl+C`, then `npm run dev`) to reset it. |
 | Admin password forgotten | Run `npm run seed`. It resets the admin password to the one in `.env`. |
 
 ---

@@ -5,6 +5,7 @@ const Purchase = require('../models/Purchase');
 const Voucher = require('../models/Voucher');
 const { protect, usersOnly } = require('../middleware/auth');
 const { httpError } = require('../middleware/error');
+const { voucherLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ const STATUSES = ['To Read', 'Reading', 'Finished'];
 
 // POST /api/library/buy  { bookId, code }
 // "Buy Now": a valid voucher code acts as payment and adds the book to My Library.
-router.post('/buy', async (req, res) => {
+router.post('/buy', voucherLimiter, async (req, res) => {
   const { bookId } = req.body || {};
   const code = String(req.body?.code || '').trim().toUpperCase();
   if (!code) throw httpError(400, 'Please enter a voucher code');
