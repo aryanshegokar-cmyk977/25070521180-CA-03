@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
   }
 
   const login = (email, password) => saveLogin(api.post('/auth/login', { email, password }));
+  const adminLogin = (email, password) => saveLogin(api.post('/auth/admin/login', { email, password }));
   const register = (name, email, password) => saveLogin(api.post('/auth/register', { name, email, password }));
 
   function logout() {
@@ -45,7 +46,7 @@ export function AuthProvider({ children }) {
     setOwnedCount(0);
   }
 
-  const value = { user, ownedCount, loading, login, register, logout, refreshUser, setUser };
+  const value = { user, ownedCount, loading, login, adminLogin, register, logout, refreshUser, setUser };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

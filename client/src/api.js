@@ -10,14 +10,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// If the server says our login is no longer valid, log out and go to the Login page.
+// If the server says our login is no longer valid, log out and go to the right Login page.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const isLoginAttempt = error.config?.url?.startsWith('/auth/login');
+    const isLoginAttempt = error.config?.url?.includes('/login');
     if (error.response?.status === 401 && !isLoginAttempt && localStorage.getItem('token')) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = window.location.pathname.startsWith('/admin') ? '/admin/login' : '/login';
     }
     return Promise.reject(error);
   }

@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false); // menu open on phones
 
@@ -35,7 +35,6 @@ export default function Navbar() {
           <NavLink to="/" end onClick={close}>Store</NavLink>
           <NavLink to="/library" onClick={close}>My Library</NavLink>
           <NavLink to="/profile" onClick={close}>Profile</NavLink>
-          {user?.role === 'admin' && <NavLink to="/admin" onClick={close}>Admin</NavLink>}
           <button className="btn btn-ghost" onClick={handleLogout}>Log out</button>
         </nav>
       </div>

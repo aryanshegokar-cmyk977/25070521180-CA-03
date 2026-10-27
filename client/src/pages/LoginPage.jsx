@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { errorMessage } from '../api';
 
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   // Already logged in? Skip this page.
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to={user.role === 'admin' ? '/admin' : '/'} replace />;
 
   const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -86,6 +86,9 @@ export default function LoginPage() {
             {busy ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Create account'}
           </button>
         </form>
+        <p className="auth-switch">
+          Staff member? <Link to="/admin/login">Admin login →</Link>
+        </p>
       </section>
     </div>
   );

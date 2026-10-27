@@ -42,7 +42,10 @@ export default function AdminBooks() {
   return (
     <section>
       <div className="page-header">
-        <h2>Books ({books.length})</h2>
+        <div>
+          <h1>Books</h1>
+          <p className="muted">{books.length} books in the store</p>
+        </div>
         <button className="btn btn-primary" onClick={() => setEditing(null)}>+ Add book</button>
       </div>
       {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}

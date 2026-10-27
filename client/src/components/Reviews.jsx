@@ -41,10 +41,10 @@ export default function Reviews({ bookId, onChange }) {
     try {
       if (myReview) await api.put(`/reviews/${myReview._id}`, { rating, comment });
       else await api.post('/reviews', { bookId, rating, comment });
+      await load(); // refresh the list first, so old stars never flash on screen
       setEditing(false);
       setRating(0);
       setComment('');
-      await load();
       onChange?.();
     } catch (err) {
       setError(errorMessage(err));
@@ -110,9 +110,9 @@ export default function Reviews({ bookId, onChange }) {
                   </div>
                 </div>
                 {review.comment && <p>{review.comment}</p>}
-                {(mine || user.role === 'admin') && (
+                {mine && (
                   <div className="btn-row">
-                    {mine && !editing && <button className="btn btn-secondary btn-small" onClick={startEdit}>Edit</button>}
+                    {!editing && <button className="btn btn-secondary btn-small" onClick={startEdit}>Edit</button>}
                     <button className="btn btn-danger btn-small" onClick={() => handleDelete(review)}>Delete</button>
                   </div>
                 )}

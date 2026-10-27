@@ -75,12 +75,19 @@ export default function AdminVouchers() {
 
   return (
     <section>
+      <div className="page-header">
+        <div>
+          <h1>Vouchers</h1>
+          <p className="muted">Codes readers use instead of payment. One use = one book.</p>
+        </div>
+      </div>
+
       <form className="card form admin-form" onSubmit={handleSubmit}>
         <h2>{editingId ? `Edit voucher ${form.code}` : 'Create a voucher'}</h2>
         <div className="form-grid">
           <label>
             Code
-            <input name="code" value={form.code} onChange={update} required placeholder="e.g. SUMMER25" style={{ textTransform: 'uppercase' }} />
+            <input name="code" value={form.code} onChange={update} required placeholder="e.g. SUMMER25" className="code-input" />
           </label>
           <label>
             Max uses

@@ -150,6 +150,8 @@ textarea { resize: vertical; min-height: 6rem; }
   .auth-hero p { margin-inline: auto; }
   .auth-hero ul { justify-content: center; }
 }
+.auth-switch { text-align: center; margin: 1.25rem 0 0; font-size: 0.9rem; color: var(--muted); }
+.auth-switch a { font-weight: 600; text-decoration: none; }
 
 /* ---------- Book covers ---------- */
 .book-cover {
@@ -302,7 +304,6 @@ textarea { resize: vertical; min-height: 6rem; }
 }
 
 /* ---------- Admin ---------- */
-.admin-tabs { max-width: 360px; }
 .admin-form { margin-bottom: 1.5rem; }
 .admin-list { display: flex; flex-direction: column; gap: 0.6rem; }
 .admin-row { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; flex-wrap: wrap; }
@@ -330,4 +331,57 @@ textarea { resize: vertical; min-height: 6rem; }
   .book-form-top { grid-template-columns: 1fr; }
   .book-form-preview { width: 110px; }
   .chapter-editor-head select { max-width: 100%; width: 100%; }
+}
+
+/* ---------- Admin area (separate dark "staff" look) ---------- */
+.admin-auth-page {
+  min-height: 100vh; display: grid; place-items: center; padding: 1.5rem 1rem;
+  background: radial-gradient(circle at 20% 15%, #312e81 0, transparent 45%), radial-gradient(circle at 80% 90%, #1e3a5f 0, transparent 45%), #0f1220;
+}
+.admin-auth-card { width: 100%; max-width: 400px; background: #181c2e; color: #e6e8f2; border: 1px solid #2a2f48; border-radius: 18px; padding: 2rem 1.75rem; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45); }
+.admin-auth-card h1 { font-size: 1.6rem; margin-top: 1.5rem; }
+.admin-auth-sub { color: #9aa0b8; }
+.admin-auth-card .form label { color: #c9cde0; }
+.admin-auth-card input { background: #0f1220; border-color: #2a2f48; color: #fff; }
+.admin-auth-card .auth-switch a { color: #a5b4fc; }
+.admin-auth-brand, .admin-brand { display: flex; align-items: center; gap: 0.6rem; }
+.admin-auth-brand strong, .admin-brand strong { display: block; font-family: var(--serif); font-size: 1.15rem; color: #fff; }
+.admin-auth-brand span, .admin-brand span { display: block; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: #a5b4fc; }
+
+.admin-shell { min-height: 100vh; display: grid; grid-template-columns: 240px 1fr; }
+.admin-sidebar { background: #151826; color: #c9cde0; padding: 1.25rem 1rem; display: flex; flex-direction: column; gap: 1.75rem; position: sticky; top: 0; height: 100vh; }
+.admin-nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+.admin-nav a { padding: 0.65rem 0.8rem; border-radius: 10px; color: #c9cde0; text-decoration: none; font-weight: 600; white-space: nowrap; }
+.admin-nav a:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+.admin-nav a.active { background: var(--primary); color: #fff; }
+.admin-account { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-top: 1px solid #2a2f48; padding-top: 1rem; font-size: 0.9rem; }
+.admin-account span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admin-logout { background: transparent; color: #e6e8f2; border-color: #3a405e; }
+.admin-logout:hover { background: rgba(255, 255, 255, 0.08); }
+.admin-content { padding: 1.75rem clamp(1rem, 3vw, 2.5rem) 3rem; min-width: 0; max-width: 1180px; width: 100%; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card { display: flex; flex-direction: column; gap: 0.15rem; text-decoration: none; color: inherit; transition: transform 0.15s; }
+a.stat-card:hover { transform: translateY(-2px); border-color: var(--primary); }
+.stat-card strong { font-family: var(--serif); font-size: 2rem; color: var(--primary-dark); line-height: 1.1; }
+.stat-card span:last-child { color: var(--muted); font-size: 0.9rem; }
+.stat-icon { font-size: 1.4rem; }
+.recent-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.recent-list li { display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+.recent-list li:last-child { border-bottom: 0; }
+.recent-list .book-cover-small { width: 34px; font-size: 0; flex-shrink: 0; }
+.users-search { width: min(100%, 300px); }
+.code-input { text-transform: uppercase; }
+.code-input::placeholder { text-transform: none; }
+
+/* On phones the sidebar becomes a top bar with scrollable links. */
+@media (max-width: 860px) {
+  .admin-shell { grid-template-columns: minmax(0, 1fr); }
+  .admin-sidebar { min-width: 0; position: sticky; height: auto; z-index: 20; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; }
+  .admin-brand { flex: 1; }
+  .admin-account { border-top: 0; padding-top: 0; }
+  .admin-account span { display: none; }
+  .admin-nav { order: 3; flex: 1 0 100%; flex-direction: row; overflow-x: auto; gap: 0.3rem; }
+  .admin-nav a { padding: 0.5rem 0.7rem; font-size: 0.9rem; }
+  .admin-content { padding-top: 1.25rem; }
 }
