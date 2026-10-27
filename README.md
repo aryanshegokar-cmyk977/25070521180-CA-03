@@ -7,6 +7,12 @@
 - **Backend:** Node.js + Express + MongoDB (Mongoose), login with JWT tokens
 - **Frontend:** React (Vite) + React Router + axios, responsive (works on phones)
 
+| Store | Reader | Admin dashboard |
+|---|---|---|
+| ![Store](docs/screenshots/02-store.png) | ![Reader](docs/screenshots/03-reader.png) | ![Admin dashboard](docs/screenshots/09-admin-dashboard.png) |
+
+More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how-it-works) · run it with [section 4 onwards](#4-install-these-on-your-laptop-one-time-only).
+
 ---
 
 ## 1. What's inside
@@ -15,8 +21,8 @@
 25070521180/              ← the submission folder (named after the PRN)
 ├── client/               ← the website (React)
 │   └── src/
-│       ├── pages/        ← the 7 pages
-│       ├── components/   ← reusable pieces (book cover, stars, Buy box, admin forms...)
+│       ├── pages/        ← reader pages + admin pages (pages/admin/)
+│       ├── components/   ← reusable pieces (book cover, stars, Buy box, admin layout & forms...)
 │       ├── context/      ← remembers who is logged in
 │       └── api.js        ← talks to the server
 ├── server/               ← the backend (Node.js + Express)
@@ -29,25 +35,103 @@
 │   └── data/
 │       ├── books.json    ← the list of books
 │       └── books/        ← the full text of each book (.txt)
-├── README.md             ← this file
-└── VIVA_GUIDE.md         ← plain-English explanation of how everything works
+├── docs/screenshots/     ← pictures used in this README
+└── README.md             ← this file
 ```
 
-### The 7 pages
+### The pages
 
-| # | Page | What it does |
-|---|------|--------------|
-| 1 | **Login / Sign up** | Guards the whole app. Nothing else is visible until you log in. |
-| 2 | **Store** (home) | All books with covers, search by title/author, filter by genre. |
-| 3 | **Book Details** | Summary, chapter list, star reviews, **Buy Now** with a voucher code. |
-| 4 | **Reader** | Read chapters. Locked chapters show a 🔒 and a Buy box. Bigger/smaller text. |
-| 5 | **My Library** | Books you bought, tagged **To Read / Reading / Finished**. |
-| 6 | **Profile** | Name, email, books owned, change name, change password. |
-| 7 | **Admin Panel** | Create / edit / delete **books** (and their chapters) and **voucher codes**. Admins only. |
+Readers and admins have **separate logins and separate areas**. Admins only manage the store; they don't buy or review books.
+
+**Reader area**
+
+| # | Page | URL | What it does |
+|---|------|-----|--------------|
+| 1 | **Login / Sign up** | `/login` | Guards the whole app. Nothing else is visible until you log in. |
+| 2 | **Store** (home) | `/` | All books with covers, search by title/author, filter by genre. |
+| 3 | **Book Details** | `/books/:id` | Summary, chapter list, star reviews, **Buy Now** with a voucher code. |
+| 4 | **Reader** | `/read/:id/:chapter` | Read chapters. Locked chapters show a 🔒 and a Buy box. Bigger/smaller text. |
+| 5 | **My Library** | `/library` | Books you bought, tagged **To Read / Reading / Finished**. |
+| 6 | **Profile** | `/profile` | Name, email, books owned, change name, change password. |
+
+**Admin area** (its own dark "staff" look and sidebar)
+
+| # | Page | URL | What it does |
+|---|------|-----|--------------|
+| 7 | **Admin Login** | `/admin/login` | Staff-only login. No sign-up: the admin account comes from the seed script. |
+| 8 | **Dashboard** | `/admin` | Totals (readers, books, books sold, voucher uses, reviews) + recent purchases. |
+| 9 | **Books** | `/admin/books` | Create / edit / delete books, including every chapter. |
+| 10 | **Vouchers** | `/admin/vouchers` | Create / edit / delete voucher codes; shows Active / Expired / Used up. |
+| 11 | **Users** | `/admin/users` | See every reader (books owned, reviews) and delete accounts. |
 
 ---
 
-## 2. Install these on your laptop (one time only)
+## 2. Screenshots
+
+| | |
+|---|---|
+| **Login**<br>![Login](docs/screenshots/01-login.png) | **Book details + reviews**<br>![Book details](docs/screenshots/05-book-details.png) |
+| **Locked chapter + voucher error**<br>![Locked chapter](docs/screenshots/04-locked-chapter.png) | **My Library**<br>![My Library](docs/screenshots/06-library.png) |
+| **Profile**<br>![Profile](docs/screenshots/07-profile.png) | **Admin login**<br>![Admin login](docs/screenshots/08-admin-login.png) |
+| **Admin: edit a book's chapters**<br>![Edit book](docs/screenshots/10-admin-edit-book.png) | **Admin: users**<br>![Users](docs/screenshots/12-admin-users.png) |
+
+**Admin: vouchers**
+
+![Vouchers](docs/screenshots/11-admin-vouchers.png)
+
+**On a phone**
+
+| Store | Menu | Admin |
+|---|---|---|
+| ![Phone store](docs/screenshots/13-phone-store.png) | ![Phone menu](docs/screenshots/14-phone-menu.png) | ![Phone admin](docs/screenshots/15-phone-admin.png) |
+
+---
+
+## 3. How it works
+
+```
+ [ Browser: React website ]  ⇄  [ Express server ]  ⇄  [ MongoDB database ]
+          client/                    server/              bookverse database
+```
+
+The website never touches the database directly. It sends requests to the server (e.g. `GET /api/books`), and the server checks the rules, then reads or writes MongoDB. They talk in **JSON**.
+
+### Data (Mongoose models)
+| Model | Stores | Rules |
+|-------|--------|-------|
+| **User** | name, email, password, role (`user` / `admin`) | email unique; password **hashed with bcrypt** before saving |
+| **Book** | title, author, summary, genre, year, cover colour, list of chapters | `slug` unique (used to match books when re-seeding) |
+| **Voucher** | code, max uses, used count, expiry date, who used it | code unique, stored in capitals |
+| **Purchase** | which reader owns which book + tag (To Read / Reading / Finished) | a reader owns each book once |
+| **Review** | reader, book, 1-5 stars, comment | one review per reader per book |
+
+### Login and security
+- **Passwords** are hashed with bcrypt: scrambled one way, so not even the database holds the real password.
+- **Logging in** gives you a **JWT token**: a signed pass with your user id and role, valid for 7 days. The website sends it with every request (`Authorization: Bearer ...`). It's signed with `JWT_SECRET`, so it can't be faked.
+- **Separate logins:** `/api/auth/login` only accepts readers and `/api/auth/admin/login` only accepts admins. Sign-up always creates readers; the only admin comes from the seed script.
+- **Server guards** (`server/src/middleware/auth.js`): `protect` (must be logged in, else 401), `adminOnly` (admin features, else 403), `usersOnly` (buying, library, writing reviews, else 403). The website hides pages too (`ProtectedRoute`), but the real protection is on the server.
+
+### Locked chapters
+The book list and details never include chapter text, only titles. When you open a chapter, the server sends the text only if it's **chapter 1** (free preview), you **own** the book, or you're an **admin**. Otherwise it answers *403 locked* and the text never reaches the browser.
+
+### Buying with a voucher
+Checks, in order, each with its own friendly message: already own the book → code doesn't exist → code expired → all uses gone → you already used this code. Then one **single database step** adds 1 to the used count, but only if the limits still allow it. So if two people grab the last use at the same moment, only one gets it. That was tested with 5 people buying at once: exactly 1 succeeded. Then the Purchase is saved and the book appears in My Library.
+
+### Whole books → chapters
+`server/src/utils/splitBook.js` removes the Project Gutenberg licence text, finds chapter headings with a pattern (lines like "CHAPTER I." / "Chapter 1" / "Letter 1"), and cuts the book there. It also re-joins the hard-wrapped lines into paragraphs while keeping poems' line breaks. If no headings are found, it splits the book into equal "Parts". `npm run seed` saves each book by its `slug`, so re-seeding updates books in place without breaking purchases or reviews.
+
+### Website (React)
+- `App.jsx`: every page and its URL (React Router), with the reader area and admin area each behind their own `ProtectedRoute`.
+- `context/AuthContext.jsx`: remembers who's logged in and shares it with every page.
+- `api.js`: one axios helper that attaches the token and logs you out if it expires.
+- `index.css`: all the styling. Media queries rearrange things on small screens: the navbar becomes a ☰ menu, the reader's chapter list hides behind a button, and the admin sidebar becomes a top bar.
+
+### Testing
+Tested against a real MongoDB: **75 API checks** (every route, every voucher rule, permissions) and **40 browser checks** that click through the whole app as a reader and as an admin, on desktop and phone sizes.
+
+---
+
+## 4. Install these on your laptop (one time only)
 
 1. **Node.js**: go to <https://nodejs.org>, download the **LTS** version, and install it (click Next until it's done).
 2. **MongoDB Community Server**: go to <https://www.mongodb.com/try/download/community>, pick your system, and download.
@@ -68,7 +152,7 @@ If you see version numbers, you're good.
 
 ---
 
-## 3. Get the code
+## 5. Get the code
 
 **Option A (easiest):** on the GitHub repo page, click the green **Code** button → **Download ZIP**. Unzip it, then **rename the folder to `25070521180`**.
 
@@ -84,7 +168,7 @@ git clone https://github.com/aryanshegokar-cmyk977/25070521180-CA-03.git 2507052
 
 ---
 
-## 4. Start the server (backend)
+## 6. Start the server (backend)
 
 Open a terminal **inside the `server` folder**. In VS Code: right-click the `server` folder → **Open in Integrated Terminal**. Then type these one by one:
 
@@ -118,7 +202,7 @@ BookVerse server running at http://localhost:5000
 
 ---
 
-## 5. Start the website (frontend)
+## 7. Start the website (frontend)
 
 Open a **second** terminal **inside the `client` folder**, then:
 
@@ -133,15 +217,17 @@ Open **<http://localhost:5173>** in your browser. 🎉
 
 ---
 
-## 6. Logins and voucher codes for testing
+## 8. Logins and voucher codes for testing
 
-**Admin login**
+**Admin login:** open **<http://localhost:5173/admin/login>** (or click "Admin login →" under the reader login box).
 
 | Email | Password |
 |-------|----------|
 | `admin@bookverse.com` | `Admin@123` |
 
-To test as a normal user, click **Sign up** and make a new account.
+**Reader login:** at <http://localhost:5173/login>, click **Sign up** and make a new account.
+
+The two logins are kept apart by the server: the admin account is refused on the reader login, and reader accounts are refused on the admin login.
 
 **Voucher codes**
 
@@ -163,11 +249,11 @@ To test as a normal user, click **Sign up** and make a new account.
 5. Buy with `FREEBOOK` (it works).
 6. Make a second account and try `FREEBOOK` again (fully used).
 7. Write a review and change the tag in My Library.
-8. Log in as admin and add a voucher or edit a book.
+8. Log out, open `/admin/login`, and sign in as admin. Check the dashboard, add a voucher, edit a book, and look at the users list.
 
 ---
 
-## 7. See the data in MongoDB Compass
+## 9. See the data in MongoDB Compass
 
 1. Open **MongoDB Compass**.
 2. In the connection box, use `mongodb://127.0.0.1:27017` and click **Connect**.
@@ -178,7 +264,7 @@ Passwords show up as long scrambled text. That's on purpose: they're hashed (scr
 
 ---
 
-## 8. Adding or replacing books (whole books, split into chapters automatically)
+## 10. Adding or replacing books (whole books, split into chapters automatically)
 
 You **don't** need to cut books into chapters by hand. Drop in the whole book and the seed script finds the chapter headings ("CHAPTER I.", "Chapter 1", "Letter 1"...) and splits it for you.
 
@@ -224,7 +310,7 @@ Swap the `.txt` file in `server/data/books/` (keep the same file name), then run
     { "title": "Chapter 2", "content": "Text of chapter two..." }
   ]
   ```
-- You can also edit any chapter in the **Admin Panel → Books → Edit**.
+- You can also edit any chapter in the **Admin area → Books → Edit**.
 
 ### Useful commands (in the `server` folder)
 
@@ -237,14 +323,15 @@ Swap the `.txt` file in `server/data/books/` (keep the same file name), then run
 
 ---
 
-## 9. API reference (for the marker)
+## 11. API reference (for the marker)
 
-All routes start with `/api`. 🔒 = needs login, 👑 = admin only.
+All routes start with `/api`. 🔒 = needs login, 📖 = readers only, 👑 = admins only.
 
 | Method | URL | What it does |
 |--------|-----|--------------|
 | POST | `/auth/register` | Sign up (always as a normal user) |
-| POST | `/auth/login` | Log in, returns a JWT token |
+| POST | `/auth/login` | Reader login, returns a JWT token (refuses admin accounts) |
+| POST | `/auth/admin/login` | Admin login, returns a JWT token (refuses reader accounts) |
 | GET 🔒 | `/auth/me` | Current user + number of books owned |
 | PUT 🔒 | `/auth/me` | Change name |
 | PUT 🔒 | `/auth/me/password` | Change password |
@@ -258,21 +345,25 @@ All routes start with `/api`. 🔒 = needs login, 👑 = admin only.
 | DELETE 👑 | `/books/:id` | Delete book (+ its purchases and reviews) |
 | GET/POST 👑 | `/vouchers` | List / create vouchers |
 | PUT/DELETE 👑 | `/vouchers/:id` | Update / delete voucher |
-| POST 🔒 | `/library/buy` | Buy a book with `{ bookId, code }` |
-| GET 🔒 | `/library` | My books |
-| PUT 🔒 | `/library/:id` | Change tag: To Read / Reading / Finished |
+| POST 📖 | `/library/buy` | Buy a book with `{ bookId, code }` |
+| GET 📖 | `/library` | My books |
+| PUT 📖 | `/library/:id` | Change tag: To Read / Reading / Finished |
 | GET 🔒 | `/reviews/book/:bookId` | Reviews for a book |
-| POST 🔒 | `/reviews` | Write a review `{ bookId, rating, comment }` |
-| PUT/DELETE 🔒 | `/reviews/:id` | Edit / delete own review (admins can delete any) |
+| POST 📖 | `/reviews` | Write a review `{ bookId, rating, comment }` |
+| PUT 📖 | `/reviews/:id` | Edit own review |
+| DELETE 🔒 | `/reviews/:id` | Delete own review |
+| GET 👑 | `/admin/stats` | Dashboard numbers + recent purchases |
+| GET 👑 | `/admin/users` | All reader accounts with books owned and review counts |
+| DELETE 👑 | `/admin/users/:id` | Delete a reader (+ their library and reviews) |
 
 ---
 
-## 10. Troubleshooting
+## 12. Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
 | `Could not connect to MongoDB` | MongoDB isn't running. **Windows:** press Win+R, type `services.msc`, find **MongoDB Server**, and click **Start**. **Mac:** `brew services start mongodb-community`. |
-| `JWT_SECRET is missing` | You haven't created `server/.env`. See step 4. |
+| `JWT_SECRET is missing` | You haven't created `server/.env`. See section 6. |
 | Website says "Cannot reach the server" | The server terminal isn't running. Start it with `npm run dev` in `server`. |
 | `'npm' is not recognized` | Node.js isn't installed, or the terminal was opened before installing. Close the terminal and open a new one. |
 | Port already in use | An old copy is still running. Close the other terminals, or restart the laptop. |
@@ -280,7 +371,7 @@ All routes start with `/api`. 🔒 = needs login, 👑 = admin only.
 
 ---
 
-## 11. Submitting
+## 13. Submitting
 
 1. Delete both `node_modules` folders (`client/node_modules` and `server/node_modules`). They're huge and get rebuilt by `npm install`.
 2. Don't include your `.env` file (it's already excluded from GitHub).
