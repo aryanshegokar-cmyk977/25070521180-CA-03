@@ -64,7 +64,7 @@ router.get('/', async (req, res) => {
   ]);
 
   const ratings = await ratingsFor(books.map((b) => b._id));
-  const owned = await Purchase.find({ user: req.user._id }).distinct('book');
+  const owned = await Purchase.distinct('book', { user: req.user._id });
   const ownedSet = new Set(owned.map((id) => id.toString()));
 
   res.json(
