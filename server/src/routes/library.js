@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const Book = require('../models/Book');
 const Purchase = require('../models/Purchase');
 const Voucher = require('../models/Voucher');
-const { protect } = require('../middleware/auth');
+const { protect, usersOnly } = require('../middleware/auth');
 const { httpError } = require('../middleware/error');
 
 const router = express.Router();
 
-router.use(protect);
+router.use(protect, usersOnly);
 
 const STATUSES = ['To Read', 'Reading', 'Finished'];
 

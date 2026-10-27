@@ -34,4 +34,10 @@ function adminOnly(req, res, next) {
   next();
 }
 
-module.exports = { createToken, protect, adminOnly };
+// Guard: reader features only (admins manage the shop, they don't buy or review).
+function usersOnly(req, res, next) {
+  if (req.user.role !== 'user') throw httpError(403, 'This feature is for readers only');
+  next();
+}
+
+module.exports = { createToken, protect, adminOnly, usersOnly };

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Book = require('../models/Book');
 const Review = require('../models/Review');
-const { protect } = require('../middleware/auth');
+const { protect, usersOnly } = require('../middleware/auth');
 const { httpError } = require('../middleware/error');
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.get('/book/:bookId', async (req, res) => {
 });
 
 // POST /api/reviews  { bookId, rating, comment }  - write a review
-router.post('/', async (req, res) => {
+router.post('/', usersOnly, async (req, res) => {
   const { bookId, rating, comment } = req.body || {};
   if (!mongoose.isValidObjectId(bookId) || !(await Book.exists({ _id: bookId }))) throw httpError(404, 'Book not found');
 
@@ -41,7 +41,7 @@ async function findEditableReview(req) {
 }
 
 // PUT /api/reviews/:id  { rating, comment }  - edit my review
-router.put('/:id', async (req, res) => {
+router.put('/:id', usersOnly, async (req, res) => {
   const review = await findEditableReview(req);
   const { rating, comment } = req.body || {};
   if (rating !== undefined) review.rating = rating;

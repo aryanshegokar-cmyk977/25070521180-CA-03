@@ -6,6 +6,7 @@ const bookRoutes = require('./routes/books');
 const voucherRoutes = require('./routes/vouchers');
 const libraryRoutes = require('./routes/library');
 const reviewRoutes = require('./routes/reviews');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/vouchers', voucherRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -23,8 +23,9 @@ router.post('/register', async (req, res) => {
   res.status(201).json({ token: createToken(user), user: publicUser(user) });
 });
 
-// POST /api/auth/login  - log in with email + password
-router.post('/login', async (req, res) => {
+// Checks email + password and makes sure the account has the expected role.
+// Readers and admins log in on separate pages, so each page only accepts its own kind of account.
+async function loginAs(role, req, res) {
   const { email, password } = req.body || {};
   if (!email || !password) throw httpError(400, 'Please enter your email and password');
 
@@ -32,8 +33,22 @@ router.post('/login', async (req, res) => {
   if (!user || !(await user.checkPassword(password))) {
     throw httpError(401, 'Wrong email or password');
   }
+  if (user.role !== role) {
+    throw httpError(
+      403,
+      role === 'admin'
+        ? 'This is not an admin account. Please use the reader login.'
+        : 'Admin accounts must use the admin login page.'
+    );
+  }
   res.json({ token: createToken(user), user: publicUser(user) });
-});
+}
+
+// POST /api/auth/login  - reader login
+router.post('/login', (req, res) => loginAs('user', req, res));
+
+// POST /api/auth/admin/login  - admin login
+router.post('/admin/login', (req, res) => loginAs('admin', req, res));
 
 // GET /api/auth/me  - who am I? (+ how many books I own, for the Profile page)
 router.get('/me', protect, async (req, res) => {
