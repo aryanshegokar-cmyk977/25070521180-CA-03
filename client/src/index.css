@@ -576,7 +576,7 @@ select { cursor: pointer; }
   /* a little stack of pages underneath */
   box-shadow: 4px 4px 0 -1px var(--paper-2), 4px 4px 0 0 var(--edge), 8px 8px 0 -1px var(--paper-2), 8px 8px 0 0 var(--edge), var(--shadow);
 }
-.page-turn { animation: page-in 0.45s ease both; }
+.page-turn { transform-origin: 0 50%; animation: page-curl 0.6s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
 .reader-kicker { display: block; text-align: center; font-weight: 900; font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-text); }
 .reader-title { text-align: center; margin: 0.4rem 0 0.2rem; font-size: clamp(1.6rem, 4vw, 2.3rem); }
 .ornament { text-align: center; color: var(--accent); font-size: 1.6rem; margin: 0.2rem 0 1.6rem; }
@@ -890,6 +890,134 @@ a.stat-card:hover { transform: translateY(-3px) rotate(-0.5deg); box-shadow: var
 }
 .wax-seal span { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; border: 2px solid rgba(255, 220, 210, 0.45); color: rgba(255, 228, 220, 0.9); font-family: var(--font-display, serif); font-weight: 800; font-size: 1.2rem; letter-spacing: 0.06em; }
 @keyframes seal-wobble { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) scale(1.03); } }
+
+/* ---------- My Library: wooden bookshelf ---------- */
+.bookshelf {
+  position: relative; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0 4px; padding: 0 1.2rem;
+  margin-bottom: 0.6rem; border-radius: 14px 14px 6px 6px;
+  background:
+    repeating-linear-gradient(transparent 0 calc(var(--row, 260px) - 22px), #6e4426 calc(var(--row, 260px) - 22px) var(--row, 260px)),
+    linear-gradient(180deg, #4a2c18, #5c3820);
+  --row: 270px;
+  box-shadow: inset 0 0 0 6px #7a4b2a, inset 0 0 30px rgba(0, 0, 0, 0.45), var(--shadow-lg);
+  min-height: var(--row);
+}
+.bookshelf::after { content: ''; flex: 1 0 100%; height: 0; }
+.spine {
+  /* every row is exactly --row tall, so the planks in the background line up under the books */
+  --sh: var(--h);
+  position: relative; width: 46px; height: var(--sh); margin: calc(var(--row) - 22px - var(--sh)) 0 22px; padding: 1.4rem 0 0.6rem; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent 18%, rgba(255, 255, 255, 0.14) 45%, transparent 60%, rgba(0, 0, 0, 0.3)), var(--cover);
+  border-radius: 4px 4px 2px 2px; color: #fff6e6; transform-origin: 50% 100%; transform: rotate(var(--lean));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 2px 0 4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.35s var(--ease-pop), box-shadow 0.3s;
+}
+.spine::before, .spine::after { content: ''; position: absolute; left: 6px; right: 6px; height: 3px; background: rgba(255, 230, 170, 0.6); border-radius: 2px; }
+.spine::before { top: 10px; }
+.spine::after { bottom: 34px; }
+.spine:hover, .spine:focus-visible { transform: translateY(-12px) rotate(0deg); box-shadow: 0 10px 14px rgba(0, 0, 0, 0.4); }
+.spine.picked { transform: translateY(-22px) rotate(-3deg); box-shadow: 0 16px 18px rgba(0, 0, 0, 0.45), 0 0 0 2px var(--gold); }
+.spine-title {
+  writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
+  line-height: 1.1; max-height: calc(var(--sh) - 4.5rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.spine-author { font-size: 0.5rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; max-width: 42px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spine-ribbon { position: absolute; top: -2px; right: 8px; width: 8px; height: 38px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+.ribbon-to-read { background: #b9b2c6; }
+.ribbon-reading { background: var(--gold); }
+.ribbon-finished { background: #3fae6a; }
+.shelf-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.6rem; margin: 0 0 1.4rem; }
+.ribbon-dot { display: inline-block; width: 10px; height: 14px; border-radius: 2px; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); margin-left: 0.4rem; }
+.library-item.picked { box-shadow: 0 0 0 3px var(--gold), var(--shadow-lg); animation: pop-in 0.4s var(--ease-pop); }
+@media (max-width: 600px) { .bookshelf { --row: 230px; padding: 0 0.7rem; } .spine { --sh: calc(var(--h) * 0.8); width: 38px; } .shelf-hint { display: none; } }
+
+/* ---------- Admin: the Librarian's Desk ---------- */
+.admin-content.desk {
+  max-width: none; position: relative;
+  background:
+    repeating-linear-gradient(91deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 11px),
+    repeating-linear-gradient(89deg, rgba(0, 0, 0, 0.06) 0 1px, transparent 1px 47px),
+    radial-gradient(ellipse at 30% 0%, rgba(255, 210, 150, 0.18), transparent 60%),
+    linear-gradient(180deg, #8b5a34, #6f4224);
+  box-shadow: inset 8px 0 18px rgba(0, 0, 0, 0.25);
+}
+[data-theme='night'] .admin-content.desk {
+  background:
+    repeating-linear-gradient(91deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 11px),
+    repeating-linear-gradient(89deg, rgba(0, 0, 0, 0.1) 0 1px, transparent 1px 47px),
+    radial-gradient(ellipse at 30% 0%, rgba(255, 200, 120, 0.12), transparent 55%),
+    linear-gradient(180deg, #4a2f1d, #362114);
+}
+.desk-plate {
+  width: fit-content; margin: 0 auto 1.25rem; padding: 0.45rem 1.4rem; border-radius: 6px;
+  font-family: var(--font-display); font-weight: 800; letter-spacing: 0.04em; color: #4a3210;
+  background: linear-gradient(180deg, #f3d48a, #c99a3e 55%, #e8c46e); box-shadow: 0 3px 0 #8a6420, 0 6px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.desk-paper {
+  max-width: 1200px; margin: 0 auto; padding: clamp(1rem, 2.5vw, 2rem); border-radius: 6px; background: var(--bg);
+  box-shadow: 0 2px 0 var(--edge), 0 18px 30px rgba(0, 0, 0, 0.35); animation: page-curl 0.5s cubic-bezier(0.25, 0.8, 0.3, 1) both; transform-origin: 0 50%;
+}
+/* "Saved!" messages land like an inked rubber stamp */
+.desk .alert-success {
+  --tilt: -3deg; width: fit-content; transform: rotate(var(--tilt)); border: 3px double var(--success); background: transparent; color: var(--success);
+  font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.85rem; animation: stamp-in 0.45s var(--ease-pop) both;
+}
+.desk .alert-success::before { content: '✔ '; }
+@media (max-width: 860px) { .admin-content.desk { padding: 1rem 0.6rem 2rem; } .desk-plate { font-size: 0.85rem; } }
+
+/* ---------- Page turns ---------- */
+.container { perspective: 1800px; }
+.route-turn { transform-origin: 0 50%; animation: page-curl 0.55s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
+@keyframes page-curl {
+  from { opacity: 0; transform: rotateY(-24deg) translateX(40px) skewY(1deg); filter: drop-shadow(-18px 0 18px rgba(var(--shadow-rgb), 0.25)); }
+  60% { opacity: 1; }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* ---------- Quill the owl ---------- */
+.quill { position: fixed; right: clamp(0.6rem, 2vw, 1.5rem); bottom: clamp(0.6rem, 2vw, 1.25rem); z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; pointer-events: none; }
+.quill-owl { pointer-events: auto; width: 78px; height: 86px; padding: 0; border: 0; background: none; cursor: pointer; filter: drop-shadow(0 6px 6px rgba(var(--shadow-rgb), 0.3)); animation: owl-bob 3.2s ease-in-out infinite; transition: transform 0.25s var(--ease-pop); }
+.quill-owl:hover { transform: scale(1.08) rotate(-4deg); }
+.quill-owl:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 50%; }
+.quill-owl svg { width: 100%; height: 100%; overflow: visible; }
+.quill-reading .quill-owl { width: 56px; height: 62px; opacity: 0.75; }
+.owl-body, .owl-wing, .owl-lids rect { fill: #8a5a3c; }
+[data-theme='night'] .owl-body, [data-theme='night'] .owl-wing, [data-theme='night'] .owl-lids rect { fill: #6b5a8e; }
+.owl-belly { fill: #f2dcb3; }
+.owl-belly-marks { fill: none; stroke: #c49a6c; stroke-width: 2; stroke-linecap: round; }
+.owl-eye-ring { fill: #f7e8cc; }
+.owl-eye { fill: #fffaf2; }
+.owl-pupil { fill: #2c2340; transition: transform 0.3s; }
+.owl-shine { fill: #fff; }
+.owl-beak { fill: #f0aa2f; }
+.owl-feet { fill: none; stroke: #f0aa2f; stroke-width: 3; stroke-linecap: round; }
+.owl-feather { fill: var(--accent); }
+.owl-feather-line { stroke: var(--paper); stroke-width: 1.5; }
+.owl-lids rect { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); animation: owl-blink 4.5s infinite; }
+.owl-wing-left { transform-box: fill-box; transform-origin: 100% 0; }
+.owl-wing-right { transform-box: fill-box; transform-origin: 0 0; }
+.quill-happy .quill-owl { animation: owl-hop 0.5s ease-in-out 3; }
+.quill-happy .owl-wing-left { animation: wing-flap-left 0.25s ease-in-out 6 alternate; }
+.quill-happy .owl-wing-right { animation: wing-flap-right 0.25s ease-in-out 6 alternate; }
+.quill-sad .quill-owl { transform: rotate(-8deg) translateY(4px); animation: none; }
+.quill-sad .owl-pupil { transform: translateY(2.5px); }
+.quill-wow .quill-owl { animation: owl-wiggle 0.6s ease-in-out 2; }
+.quill-wow .owl-pupil { transform: scale(1.25); transform-box: fill-box; transform-origin: center; }
+.quill-bubble {
+  pointer-events: auto; position: relative; max-width: min(280px, 72vw); padding: 0.7rem 0.95rem; border-radius: 16px 16px 4px 16px;
+  background: var(--paper); color: var(--ink); border: 2px solid var(--edge); box-shadow: var(--shadow-lg);
+  font-weight: 700; font-size: 0.92rem; line-height: 1.4; animation: bubble-pop 0.35s var(--ease-pop) both;
+}
+.quill-bubble::after { content: ''; position: absolute; right: 26px; bottom: -9px; width: 14px; height: 14px; background: var(--paper); border-right: 2px solid var(--edge); border-bottom: 2px solid var(--edge); transform: rotate(45deg); }
+@keyframes owl-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes owl-hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-16px) rotate(4deg); } }
+@keyframes owl-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+@keyframes owl-blink { 0%, 92%, 100% { transform: scaleY(0); } 95% { transform: scaleY(1); } }
+@keyframes wing-flap-left { to { transform: rotate(28deg); } }
+@keyframes wing-flap-right { to { transform: rotate(-28deg); } }
+@keyframes bubble-pop { from { opacity: 0; transform: translateY(10px) scale(0.85); transform-origin: 90% 100%; } to { opacity: 1; transform: none; } }
+@media (max-width: 600px) { .quill-owl { width: 58px; height: 64px; } .quill-bubble { font-size: 0.85rem; } }
 
 /* Respect people who prefer less motion */
 @media (prefers-reduced-motion: reduce) {

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import api, { errorMessage } from '../api';
 import BuyBox from '../components/BuyBox';
 import Loader from '../components/Loader';
 import ProgressBar from '../components/ProgressBar';
 import { useStats } from '../context/StatsContext';
+import { useQuill } from '../context/QuillContext';
 import { recall, remember } from '../storage';
 
 const FONT_SIZES = [16, 18, 20, 22, 24];
@@ -13,7 +14,10 @@ export default function ReaderPage() {
   const { id, chapter } = useParams();
   const number = Number(chapter);
   const navigate = useNavigate();
-  const { refreshStats } = useStats();
+  const { stats, refreshStats } = useStats();
+  const { say } = useQuill();
+  const streakBefore = useRef(null);
+  if (streakBefore.current === null && stats) streakBefore.current = stats.streak;
 
   const [book, setBook] = useState(null); // details + chapter list
   const [page, setPage] = useState(null); // the current chapter (or locked info)
@@ -40,6 +44,11 @@ export default function ReaderPage() {
           .post('/library/progress', { bookId: id, chapter: number })
           .then(({ data }) => {
             if (data.purchase) setBook((b) => (b ? { ...b, purchase: data.purchase } : b));
+            // First chapter of the day: cheer the streak on.
+            if (streakBefore.current !== null && data.streak > streakBefore.current) {
+              say(data.streak === 1 ? 'First chapter today! Your 🔥 streak has started.' : `🔥 ${data.streak} days in a row! Hoo-hoo, keep it up!`, 'happy');
+            }
+            streakBefore.current = data.streak;
             refreshStats();
           })
           .catch(() => {});
@@ -49,7 +58,7 @@ export default function ReaderPage() {
         if (err.response?.data?.locked) setPage(err.response.data);
         else setError(errorMessage(err));
       });
-  }, [id, number, refreshStats]);
+  }, [id, number, refreshStats, say]);
 
   useEffect(() => {
     loadBook();
@@ -73,6 +82,7 @@ export default function ReaderPage() {
       const { data } = await api.put(`/library/${book.purchase._id}`, { status: 'Finished' });
       setBook((b) => ({ ...b, purchase: data }));
       setMessage('Marked as Finished. Well done! 🎉');
+      say(`You finished ${book.title}! That deserves a stamp. 📕`, 'wow');
       refreshStats();
     } catch (err) {
       setError(errorMessage(err));

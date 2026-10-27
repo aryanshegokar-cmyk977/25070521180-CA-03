@@ -4,7 +4,8 @@ import Logo from '../Logo';
 import ThemeToggle from '../ThemeToggle';
 import PaperHills from '../art/PaperHills';
 
-// The frame around every admin page: a dark sidebar (a top bar on phones) + the page.
+// The frame around every admin page: a sidebar (a top bar on phones) + the page,
+// laid on "The Librarian's Desk": a sheet of paper on a wooden desk with a brass nameplate.
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function AdminLayout() {
           <Logo size={34} />
           <div>
             <strong>BookVerse</strong>
-            <span>Admin</span>
+            <span>Librarian's Desk</span>
           </div>
         </div>
         <nav className="admin-nav">
@@ -37,8 +38,11 @@ export default function AdminLayout() {
         </div>
         <PaperHills className="admin-sidebar-hills" />
       </aside>
-      <main className="admin-content">
-        <Outlet />
+      <main className="admin-content desk">
+        <div className="desk-plate" aria-hidden="true">🪶 The Librarian's Desk</div>
+        <div className="desk-paper">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

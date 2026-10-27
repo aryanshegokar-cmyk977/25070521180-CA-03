@@ -2,12 +2,14 @@ import { useRef, useState } from 'react';
 import api, { errorMessage } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { useStats } from '../context/StatsContext';
+import { useQuill } from '../context/QuillContext';
 import { celebrate } from '../celebrate';
 
 // "Buy Now" with a voucher code. Calls onBought() after a successful purchase.
 export default function BuyBox({ bookId, onBought }) {
   const { refreshUser } = useAuth();
   const { refreshStats } = useStats();
+  const { say } = useQuill();
   const formRef = useRef(null);
   const [shakes, setShakes] = useState(0); // bumps on every wrong code to replay the shake
   const [code, setCode] = useState('');
@@ -24,10 +26,12 @@ export default function BuyBox({ bookId, onBought }) {
       refreshStats();
       const box = formRef.current?.getBoundingClientRect();
       if (box) celebrate(box.left + box.width / 2, box.top + box.height / 2);
+      say('Hoo-ray! A brand new book for your shelf! 🎉', 'happy');
       onBought?.(data.message);
     } catch (err) {
       setError(errorMessage(err));
       setShakes((n) => n + 1);
+      say('Hoo... that code didn\'t work. Check the message under the ticket!', 'sad');
     } finally {
       setBusy(false);
     }

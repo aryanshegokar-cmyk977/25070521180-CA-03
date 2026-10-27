@@ -12,6 +12,7 @@ export default function LibraryPage() {
   const [items, setItems] = useState(null);
   const [filter, setFilter] = useState('All');
   const [error, setError] = useState('');
+  const [picked, setPicked] = useState(null); // the book pulled off the shelf
 
   useEffect(() => {
     api
@@ -27,6 +28,12 @@ export default function LibraryPage() {
     } catch (err) {
       setError(errorMessage(err));
     }
+  }
+
+  // Pull a book off the shelf: highlight its card below and scroll to it.
+  function pick(item) {
+    setPicked(item._id);
+    document.getElementById(`lib-${item._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   if (!items) return error ? <div className="alert alert-error">{error}</div> : <Loader text="Loading your library..." />;
@@ -61,12 +68,38 @@ export default function LibraryPage() {
           {!items.length && <Link to="/" className="btn btn-primary">Browse the Store</Link>}
         </div>
       ) : (
+        <>
+        <div className="bookshelf" aria-label="Your bookshelf">
+          {shown.map((item, i) => (
+            <button
+              key={item._id}
+              className={`spine ${picked === item._id ? 'picked' : ''}`}
+              style={{
+                '--cover': item.book.coverColor || '#e2603f',
+                '--h': `${150 + Math.min(item.totalChapters || 0, 60) * 1.4}px`,
+                '--lean': i % 5 === 3 ? '-4deg' : '0deg',
+              }}
+              onClick={() => pick(item)}
+              title={`${item.book.title} · ${item.status}`}
+            >
+              <span className={`spine-ribbon ribbon-${item.status.replace(' ', '-').toLowerCase()}`} aria-hidden="true" />
+              <span className="spine-title">{item.book.title}</span>
+              <span className="spine-author">{item.book.author.split(' ').pop()}</span>
+            </button>
+          ))}
+        </div>
+        <p className="shelf-legend small muted">
+          <span className="ribbon-dot ribbon-to-read" /> To Read
+          <span className="ribbon-dot ribbon-reading" /> Reading
+          <span className="ribbon-dot ribbon-finished" /> Finished
+          <span className="shelf-hint">· tap a book to pull it out</span>
+        </p>
         <div className="library-list">
           {shown.map((item) => {
             const lastChapter = item.lastChapter || 1;
             const read = item.chaptersRead?.length || 0;
             return (
-              <div key={item._id} className="library-item card">
+              <div key={item._id} id={`lib-${item._id}`} className={`library-item card ${picked === item._id ? 'picked' : ''}`}>
                 <Link to={`/books/${item.book._id}`}>
                   <BookCover book={item.book} size="small" />
                 </Link>
@@ -93,6 +126,7 @@ export default function LibraryPage() {
             );
           })}
         </div>
+        </>
       )}
     </>
   );
