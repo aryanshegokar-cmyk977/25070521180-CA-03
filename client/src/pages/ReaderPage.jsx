@@ -3,6 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import api, { errorMessage } from '../api';
 import BuyBox from '../components/BuyBox';
 import Loader from '../components/Loader';
+import ProgressBar from '../components/ProgressBar';
+import { useStats } from '../context/StatsContext';
 import { recall, remember } from '../storage';
 
 const FONT_SIZES = [16, 18, 20, 22, 24];
@@ -11,6 +13,7 @@ export default function ReaderPage() {
   const { id, chapter } = useParams();
   const number = Number(chapter);
   const navigate = useNavigate();
+  const { refreshStats } = useStats();
 
   const [book, setBook] = useState(null); // details + chapter list
   const [page, setPage] = useState(null); // the current chapter (or locked info)
@@ -32,14 +35,21 @@ export default function ReaderPage() {
       .get(`/books/${id}/chapters/${number}`)
       .then((res) => {
         setPage(res.data);
-        remember(`lastChapter:${id}`, number);
+        // Reading tracker: remember this chapter (progress, "continue reading" and the streak).
+        api
+          .post('/library/progress', { bookId: id, chapter: number })
+          .then(({ data }) => {
+            if (data.purchase) setBook((b) => (b ? { ...b, purchase: data.purchase } : b));
+            refreshStats();
+          })
+          .catch(() => {});
       })
       .catch((err) => {
         // A locked chapter comes back as an error, but with useful info.
         if (err.response?.data?.locked) setPage(err.response.data);
         else setError(errorMessage(err));
       });
-  }, [id, number]);
+  }, [id, number, refreshStats]);
 
   useEffect(() => {
     loadBook();
@@ -52,16 +62,6 @@ export default function ReaderPage() {
     loadChapter();
   }, [loadChapter]);
 
-  // Opening a book you own moves it from "To Read" to "Reading".
-  useEffect(() => {
-    if (book?.purchase?.status === 'To Read') {
-      api
-        .put(`/library/${book.purchase._id}`, { status: 'Reading' })
-        .then((res) => setBook((b) => ({ ...b, purchase: res.data })))
-        .catch(() => {});
-    }
-  }, [book?.purchase?._id, book?.purchase?.status]);
-
   function changeFont(step) {
     const index = Math.min(FONT_SIZES.length - 1, Math.max(0, FONT_SIZES.indexOf(fontSize) + step));
     setFontSize(FONT_SIZES[index]);
@@ -73,6 +73,7 @@ export default function ReaderPage() {
       const { data } = await api.put(`/library/${book.purchase._id}`, { status: 'Finished' });
       setBook((b) => ({ ...b, purchase: data }));
       setMessage('Marked as Finished. Well done! 🎉');
+      refreshStats();
     } catch (err) {
       setError(errorMessage(err));
     }
@@ -122,6 +123,11 @@ export default function ReaderPage() {
             {showChapters ? 'Hide chapters' : '☰ Chapters'}
           </button>
           <span className="muted small">Chapter {number} of {total}</span>
+          {book.purchase && (
+            <div className="reader-progress">
+              <ProgressBar read={book.purchase.chaptersRead?.length || 0} total={total} label={false} />
+            </div>
+          )}
           <div className="btn-row">
             <button className="btn btn-secondary btn-small" onClick={() => changeFont(-1)} aria-label="Smaller text">A−</button>
             <button className="btn btn-secondary btn-small" onClick={() => changeFont(1)} aria-label="Bigger text">A+</button>
@@ -134,7 +140,7 @@ export default function ReaderPage() {
           <Loader text="Loading chapter..." />
         ) : page.locked ? (
           <div className="locked-panel card">
-            <div className="lock-icon">🔒</div>
+            <div className="wax-seal" aria-hidden="true"><span>BV</span></div>
             <h2>{page.title}</h2>
             <p>This chapter is locked. Buy <strong>{book.title}</strong> with a voucher code to unlock all {total} chapters.</p>
             <BuyBox bookId={book._id} onBought={handleBought} />

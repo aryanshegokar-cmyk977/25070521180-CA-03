@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api, { errorMessage } from '../api';
 import BookCover from '../components/BookCover';
 import Loader from '../components/Loader';
-import { recall } from '../storage';
+import ProgressBar from '../components/ProgressBar';
 import Motif from '../components/art/Motif';
 
 const STATUSES = ['To Read', 'Reading', 'Finished'];
@@ -23,7 +23,7 @@ export default function LibraryPage() {
   async function changeStatus(item, status) {
     try {
       const { data } = await api.put(`/library/${item._id}`, { status });
-      setItems((list) => list.map((i) => (i._id === item._id ? data : i)));
+      setItems((list) => list.map((i) => (i._id === item._id ? { ...i, ...data } : i)));
     } catch (err) {
       setError(errorMessage(err));
     }
@@ -63,7 +63,8 @@ export default function LibraryPage() {
       ) : (
         <div className="library-list">
           {shown.map((item) => {
-            const lastChapter = recall(`lastChapter:${item.book._id}`, 1);
+            const lastChapter = item.lastChapter || 1;
+            const read = item.chaptersRead?.length || 0;
             return (
               <div key={item._id} className="library-item card">
                 <Link to={`/books/${item.book._id}`}>
@@ -72,7 +73,7 @@ export default function LibraryPage() {
                 <div className="library-info">
                   <h3><Link to={`/books/${item.book._id}`}>{item.book.title}</Link></h3>
                   <p className="muted">{item.book.author}</p>
-                  <p className="muted small">Added {new Date(item.createdAt).toLocaleDateString()}</p>
+                  <ProgressBar read={read} total={item.totalChapters} />
                 </div>
                 <div className="library-actions">
                   <select
@@ -85,7 +86,7 @@ export default function LibraryPage() {
                     ))}
                   </select>
                   <Link className="btn btn-primary" to={`/read/${item.book._id}/${lastChapter}`}>
-                    {lastChapter > 1 ? `Continue (Ch. ${lastChapter})` : 'Read'}
+                    {read ? `Continue (Ch. ${lastChapter})` : 'Start reading'}
                   </Link>
                 </div>
               </div>

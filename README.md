@@ -54,8 +54,8 @@ Readers and admins have **separate logins and separate areas**. Admins only mana
 | 2 | **Store** (home) | `/` | All books with covers, search by title/author, filter by genre. |
 | 3 | **Book Details** | `/books/:id` | Summary, chapter list, star reviews, **Buy Now** with a voucher code. |
 | 4 | **Reader** | `/read/:id/:chapter` | Read chapters. Locked chapters show a 🔒 and a Buy box. Bigger/smaller text. |
-| 5 | **My Library** | `/library` | Books you bought, tagged **To Read / Reading / Finished**. |
-| 6 | **Profile** | `/profile` | Name, email, books owned, change name, change password. |
+| 5 | **My Library** | `/library` | Books you bought, with a **progress bar** each, tagged **To Read / Reading / Finished**. |
+| 6 | **Profile** | `/profile` | Name, email, books owned, a **Reader's Library Card** (chapters read, streak, stamps), change name, change password. |
 
 **Admin area** (its own dark "staff" look and sidebar)
 
@@ -115,7 +115,7 @@ The website never touches the database directly. It sends requests to the server
 | **User** | name, email, password, role (`user` / `admin`) | email unique; password **hashed with bcrypt** before saving |
 | **Book** | title, author, summary, genre, year, cover colour, list of chapters | `slug` unique (used to match books when re-seeding) |
 | **Voucher** | code, max uses, used count, expiry date, who used it | code unique, stored in capitals |
-| **Purchase** | which reader owns which book + tag (To Read / Reading / Finished) | a reader owns each book once |
+| **Purchase** | which reader owns which book + tag (To Read / Reading / Finished) + reading progress (chapters read, last chapter) | a reader owns each book once |
 | **Review** | reader, book, 1-5 stars, comment | one review per reader per book |
 
 ### Login and security
@@ -131,12 +131,19 @@ The book list and details never include chapter text, only titles. When you open
 ### Buying with a voucher
 Checks, in order, each with its own friendly message: already own the book → code doesn't exist → code expired → all uses gone → you already used this code. Then one **single database step** adds 1 to the used count, but only if the limits still allow it. So if two people grab the last use at the same moment, only one gets it. That was tested with 5 people buying at once: exactly 1 succeeded. Then the Purchase is saved and the book appears in My Library.
 
+### Reading tracker
+- Every time the Reader opens a chapter it calls `POST /api/library/progress`. For a book you own, that chapter is added to `chaptersRead` and saved as `lastChapter`, and the tag moves from To Read to Reading.
+- **Streak:** reading on a new day adds 1 if you also read yesterday, otherwise it starts again at 1. Free chapter-1 previews count too.
+- `GET /api/library/stats` adds it all up for the **navbar badge** (📚 books · 📖 chapters · 🔥 streak), the **Continue reading** card on the Store, and the **stamps** on the Profile's library card (First Ticket, Bookworm, The End, On Fire, Explorer, Collector).
+
 ### Whole books → chapters
 `server/src/utils/splitBook.js` removes the Project Gutenberg licence text, finds chapter headings with a pattern (lines like "CHAPTER I." / "Chapter 1" / "Letter 1"), and cuts the book there. It also re-joins the hard-wrapped lines into paragraphs while keeping poems' line breaks. If no headings are found, it splits the book into equal "Parts". `npm run seed` saves each book by its `slug`, so re-seeding updates books in place without breaking purchases or reviews.
 
 ### Design: paper-cut storybook
 - **All art is drawn in code** (SVG), so there are no image files and it stays sharp on any screen: layered paper hills, a little castle, drifting clouds and birds by day, a moon, stars on strings and fireflies by night (`client/src/components/art/`).
-- **Book covers are generated** from each book's colour and genre: a cut-paper motif (🐇 fantasy, 🔍 mystery, ⚡ horror, ♥ romance, 📖 others) with the title on a paper label (`BookCover.jsx`).
+- **Book covers are generated** from each book's colour: a cut-paper motif for each book (🐇 Alice, 🔍 Sherlock, ⚡ Frankenstein, ♥ Pride and Prejudice, 🦇 Dracula, ⏳ Time Machine, 🧰 treasure chest, 🌪️ Oz, 🥂 Gatsby, 🗝️ Secret Garden, ⭐ Peter Pan, 🎈 Around the World) with the title on a paper label. Hover a card and the motif pops up like a pop-up book (`BookCover.jsx`, `art/Motif.jsx`).
+- **Day ⇄ night show:** the sun and moon sit on one big turning "sky wheel", so switching modes makes the sun set behind the hills while the moon rises; paper stars are lowered on strings, clouds slide away, castle windows flicker, fireflies and a shooting star come out. The hills shift slightly with the mouse (parallax).
+- **Paper props:** the voucher box is a ticket (it shakes on a wrong code and throws paper confetti on a right one), locked chapters carry a red wax seal.
 - **Day / night mode:** the sun/moon button flips the whole site. It starts from the device's own setting and remembers your choice. All colours are CSS variables switched by `<html data-theme="day|night">` (`context/ThemeContext.jsx`, `index.css`).
 - **Readable first:** the Reader stays a calm paper page (Literata font, drop cap, adjustable text size). Animations are gentle and switch off for people who choose "reduce motion" on their device.
 - Fonts (Fraunces, Nunito, Literata) are bundled with the app, so it looks the same offline.
@@ -206,7 +213,7 @@ npm install
 ```
 npm run seed
 ```
-*(fills the database with the 4 books, the admin account and the test vouchers)*
+*(fills the database with the 12 books, the admin account and the test vouchers)*
 
 ```
 npm run dev
@@ -369,6 +376,8 @@ All routes start with `/api`. 🔒 = needs login, 📖 = readers only, 👑 = ad
 | POST 📖 | `/library/buy` | Buy a book with `{ bookId, code }` |
 | GET 📖 | `/library` | My books |
 | PUT 📖 | `/library/:id` | Change tag: To Read / Reading / Finished |
+| POST 📖 | `/library/progress` | Reader opened a chapter `{ bookId, chapter }`: saves progress + streak |
+| GET 📖 | `/library/stats` | Reading tracker: books owned, chapters read, streak, stamps, continue reading |
 | GET 🔒 | `/reviews/book/:bookId` | Reviews for a book |
 | POST 📖 | `/reviews` | Write a review `{ bookId, rating, comment }` |
 | PUT 📖 | `/reviews/:id` | Edit own review |

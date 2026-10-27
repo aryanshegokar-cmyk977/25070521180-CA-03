@@ -74,13 +74,121 @@ router.post('/buy', voucherLimiter, async (req, res) => {
   }
 });
 
-// GET /api/library  - my books
+// How many chapters each book has, as { bookId: count } (without loading the chapter text).
+async function chapterCounts(bookIds) {
+  const rows = await Book.aggregate([
+    { $match: { _id: { $in: bookIds } } },
+    { $project: { total: { $size: '$chapters' } } },
+  ]);
+  return Object.fromEntries(rows.map((r) => [r._id.toString(), r.total]));
+}
+
+// GET /api/library  - my books, with reading progress
 router.get('/', async (req, res) => {
-  const purchases = await Purchase.find({ user: req.user._id })
-    .sort({ updatedAt: -1 })
-    .populate('book', 'title author coverColor genre year slug');
-  // Skip any purchase whose book was deleted.
-  res.json(purchases.filter((p) => p.book));
+  const purchases = (
+    await Purchase.find({ user: req.user._id })
+      .sort({ updatedAt: -1 })
+      .populate('book', 'title author coverColor genre year slug')
+  ).filter((p) => p.book); // skip any purchase whose book was deleted
+
+  const totals = await chapterCounts(purchases.map((p) => p.book._id));
+  res.json(purchases.map((p) => ({ ...p.toObject(), totalChapters: totals[p.book._id.toString()] || 0 })));
+});
+
+// A date as "YYYY-MM-DD" in the server's own time zone.
+function dayString(date) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function yesterdayString() {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return dayString(d);
+}
+
+// The streak still counts if the last reading day was today or yesterday.
+function currentStreak(user) {
+  const { current, lastDay } = user.streak || {};
+  return lastDay === dayString(new Date()) || lastDay === yesterdayString() ? current : 0;
+}
+
+// POST /api/library/progress  { bookId, chapter }  - called by the Reader when a chapter is opened
+router.post('/progress', async (req, res) => {
+  const { bookId } = req.body || {};
+  const chapter = Number(req.body?.chapter);
+  if (!mongoose.isValidObjectId(bookId) || !Number.isInteger(chapter) || chapter < 1) {
+    throw httpError(400, 'Book and chapter number are required');
+  }
+
+  const purchase = await Purchase.findOne({ user: req.user._id, book: bookId });
+  if (chapter > 1 && !purchase) throw httpError(403, 'This chapter is locked');
+
+  // Streak: +1 if the last reading day was yesterday, start again at 1 if it was longer ago.
+  const today = dayString(new Date());
+  const streak = req.user.streak;
+  if (streak.lastDay !== today) {
+    streak.current = streak.lastDay === yesterdayString() ? streak.current + 1 : 1;
+    streak.best = Math.max(streak.best, streak.current);
+    streak.lastDay = today;
+    await req.user.save();
+  }
+
+  // Progress is kept for books you own (chapter 1 previews only count towards the streak).
+  if (purchase) {
+    if (!purchase.chaptersRead.includes(chapter)) purchase.chaptersRead.push(chapter);
+    purchase.lastChapter = chapter;
+    purchase.lastReadAt = new Date();
+    if (purchase.status === 'To Read') purchase.status = 'Reading';
+    await purchase.save();
+  }
+
+  res.json({ streak: currentStreak(req.user), purchase });
+});
+
+// The stamps on the reader's library card. Each one is earned by doing something in the app.
+const STAMPS = [
+  { id: 'first-book', icon: '🎟️', name: 'First Ticket', hint: 'Buy your first book', earned: (s) => s.booksOwned >= 1 },
+  { id: 'bookworm', icon: '🐛', name: 'Bookworm', hint: 'Read 10 chapters', earned: (s) => s.chaptersRead >= 10 },
+  { id: 'the-end', icon: '📕', name: 'The End', hint: 'Finish a book', earned: (s) => s.finished >= 1 },
+  { id: 'on-fire', icon: '🔥', name: 'On Fire', hint: 'Read 3 days in a row', earned: (s) => s.bestStreak >= 3 },
+  { id: 'explorer', icon: '🧭', name: 'Explorer', hint: 'Own books from 3 genres', earned: (s) => s.genres >= 3 },
+  { id: 'collector', icon: '📚', name: 'Collector', hint: 'Own 5 books', earned: (s) => s.booksOwned >= 5 },
+];
+
+// GET /api/library/stats  - numbers for the reading tracker (navbar badge, Profile, Store)
+router.get('/stats', async (req, res) => {
+  const purchases = (
+    await Purchase.find({ user: req.user._id }).populate('book', 'title genre coverColor slug author')
+  ).filter((p) => p.book);
+  const totals = await chapterCounts(purchases.map((p) => p.book._id));
+
+  const stats = {
+    booksOwned: purchases.length,
+    chaptersRead: purchases.reduce((sum, p) => sum + p.chaptersRead.length, 0),
+    finished: purchases.filter((p) => p.status === 'Finished').length,
+    genres: new Set(purchases.map((p) => p.book.genre)).size,
+    streak: currentStreak(req.user),
+    bestStreak: req.user.streak?.best || 0,
+  };
+
+  // The book read most recently, for the "Continue reading" button.
+  const last = purchases
+    .filter((p) => p.lastReadAt && p.status !== 'Finished')
+    .sort((a, b) => b.lastReadAt - a.lastReadAt)[0];
+
+  res.json({
+    ...stats,
+    stamps: STAMPS.map(({ earned, ...stamp }) => ({ ...stamp, earned: earned(stats) })),
+    continueReading: last
+      ? {
+          book: last.book,
+          chapter: last.lastChapter,
+          totalChapters: totals[last.book._id.toString()] || 0,
+          chaptersRead: last.chaptersRead.length,
+        }
+      : null,
+  });
 });
 
 // PUT /api/library/:id  { status }  - change the To Read / Reading / Finished tag
