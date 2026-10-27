@@ -11,7 +11,7 @@ A **paper-cut storybook** design with hand-drawn scenery and a **day / night** m
 
 | ☀️ Day | 🌙 Night |
 |---|---|
-| ![Store by day](docs/screenshots/02-store.jpg) | ![Store by night](docs/screenshots/17-night-store.jpg) |
+| ![Store by day](client/docs/screenshots/02-store.jpg) | ![Store by night](client/docs/screenshots/17-night-store.jpg) |
 
 More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how-it-works) · run it with [section 4 onwards](#4-install-these-on-your-laptop-one-time-only).
 
@@ -25,9 +25,11 @@ More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how
 │   └── src/
 │       ├── pages/        ← reader pages + admin pages (pages/admin/)
 │       ├── components/   ← reusable pieces (book cover, stars, Buy box, admin layout & forms...)
-│       │   └── art/      ← the hand-drawn paper scenery and cover motifs
-│       ├── context/      ← remembers who is logged in
+│       │   ├── art/      ← the hand-drawn paper scenery, cover motifs, floating leaves & stars
+│       │   └── quill/    ← Quill the owl
+│       ├── context/      ← shared state: login, reading tracker, Quill's messages
 │       └── api.js        ← talks to the server
+│   └── docs/screenshots/ ← pictures used in this README
 ├── server/               ← the backend (Node.js + Express)
 │   ├── src/
 │   │   ├── models/       ← shape of the data: User, Book, Voucher, Purchase, Review
@@ -38,7 +40,6 @@ More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how
 │   └── data/
 │       ├── books.json    ← the list of books
 │       └── books/        ← the full text of each book (.txt)
-├── docs/screenshots/     ← pictures used in this README
 └── README.md             ← this file
 ```
 
@@ -73,30 +74,38 @@ Readers and admins have **separate logins and separate areas**. Admins only mana
 
 | | |
 |---|---|
-| **Login**<br>![Login](docs/screenshots/01-login.jpg) | **Book details + reviews**<br>![Book details](docs/screenshots/05-book-details.jpg) |
-| **Locked chapter + voucher error**<br>![Locked chapter](docs/screenshots/04-locked-chapter.jpg) | **My Library**<br>![My Library](docs/screenshots/06-library.jpg) |
-| **Profile**<br>![Profile](docs/screenshots/07-profile.jpg) | **Admin login**<br>![Admin login](docs/screenshots/08-admin-login.jpg) |
-| **Admin: edit a book's chapters**<br>![Edit book](docs/screenshots/10-admin-edit-book.jpg) | **Admin: users**<br>![Users](docs/screenshots/12-admin-users.jpg) |
+| **Login**<br>![Login](client/docs/screenshots/01-login.jpg) | **Book details + reviews**<br>![Book details](client/docs/screenshots/05-book-details.jpg) |
+| **Locked chapter + voucher error**<br>![Locked chapter](client/docs/screenshots/04-locked-chapter.jpg) | **My Library**<br>![My Library](client/docs/screenshots/06-library.jpg) |
+| **Profile**<br>![Profile](client/docs/screenshots/07-profile.jpg) | **Admin login**<br>![Admin login](client/docs/screenshots/08-admin-login.jpg) |
+| **Admin: edit a book's chapters**<br>![Edit book](client/docs/screenshots/10-admin-edit-book.jpg) | **Admin: users**<br>![Users](client/docs/screenshots/12-admin-users.jpg) |
 
 **Admin: vouchers**
 
-![Vouchers](docs/screenshots/11-admin-vouchers.jpg)
+![Vouchers](client/docs/screenshots/11-admin-vouchers.jpg)
+
+**Quill the owl + the voucher ticket**
+
+![Quill reacting to a wrong code](client/docs/screenshots/21-quill-wrong-code.jpg)
 
 **Day & night**
 
 | Login by night | Reading by night |
 |---|---|
-| ![Night login](docs/screenshots/16-night-login.jpg) | ![Night reader](docs/screenshots/18-night-reader.jpg) |
+| ![Night login](client/docs/screenshots/16-night-login.jpg) | ![Night reader](client/docs/screenshots/18-night-reader.jpg) |
 
-| Reader by day | Admin dashboard |
+| My Library at night (bookshelf) | Reader by day |
 |---|---|
-| ![Reader](docs/screenshots/03-reader.jpg) | ![Admin dashboard](docs/screenshots/09-admin-dashboard.jpg) |
+| ![Night library](client/docs/screenshots/20-night-library.jpg) | ![Reader](client/docs/screenshots/03-reader.jpg) |
+
+**Admin dashboard (the Librarian's Desk)**
+
+![Admin dashboard](client/docs/screenshots/09-admin-dashboard.jpg)
 
 **On a phone**
 
 | Store | Store at night | Menu | Admin |
 |---|---|---|---|
-| ![Phone store](docs/screenshots/13-phone-store.jpg) | ![Phone store at night](docs/screenshots/19-phone-night-store.jpg) | ![Phone menu](docs/screenshots/14-phone-menu.jpg) | ![Phone admin](docs/screenshots/15-phone-admin.jpg) |
+| ![Phone store](client/docs/screenshots/13-phone-store.jpg) | ![Phone store at night](client/docs/screenshots/19-phone-night-store.jpg) | ![Phone menu](client/docs/screenshots/14-phone-menu.jpg) | ![Phone admin](client/docs/screenshots/15-phone-admin.jpg) |
 
 ---
 
@@ -197,8 +206,6 @@ git clone https://github.com/aryanshegokar-cmyk977/25070521180-CA-03.git 2507052
 ```
 
 (The last word makes the folder name your PRN.)
-
-> If the code is still on the branch `claude/new-session-0jqa05` and not on `main` yet, switch to that branch on GitHub before downloading, or merge the pull request first.
 
 ---
 
