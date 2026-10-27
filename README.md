@@ -7,9 +7,11 @@
 - **Backend:** Node.js + Express + MongoDB (Mongoose), login with JWT tokens
 - **Frontend:** React (Vite) + React Router + axios, responsive (works on phones)
 
-| Store | Reader | Admin dashboard |
-|---|---|---|
-| ![Store](docs/screenshots/02-store.png) | ![Reader](docs/screenshots/03-reader.png) | ![Admin dashboard](docs/screenshots/09-admin-dashboard.png) |
+A **paper-cut storybook** design with hand-drawn scenery and a **day / night** mode.
+
+| ☀️ Day | 🌙 Night |
+|---|---|
+| ![Store by day](docs/screenshots/02-store.jpg) | ![Store by night](docs/screenshots/17-night-store.jpg) |
 
 More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how-it-works) · run it with [section 4 onwards](#4-install-these-on-your-laptop-one-time-only).
 
@@ -23,6 +25,7 @@ More in [Screenshots](#2-screenshots) · how it's built in [How it works](#3-how
 │   └── src/
 │       ├── pages/        ← reader pages + admin pages (pages/admin/)
 │       ├── components/   ← reusable pieces (book cover, stars, Buy box, admin layout & forms...)
+│       │   └── art/      ← the hand-drawn paper scenery and cover motifs
 │       ├── context/      ← remembers who is logged in
 │       └── api.js        ← talks to the server
 ├── server/               ← the backend (Node.js + Express)
@@ -70,20 +73,30 @@ Readers and admins have **separate logins and separate areas**. Admins only mana
 
 | | |
 |---|---|
-| **Login**<br>![Login](docs/screenshots/01-login.png) | **Book details + reviews**<br>![Book details](docs/screenshots/05-book-details.png) |
-| **Locked chapter + voucher error**<br>![Locked chapter](docs/screenshots/04-locked-chapter.png) | **My Library**<br>![My Library](docs/screenshots/06-library.png) |
-| **Profile**<br>![Profile](docs/screenshots/07-profile.png) | **Admin login**<br>![Admin login](docs/screenshots/08-admin-login.png) |
-| **Admin: edit a book's chapters**<br>![Edit book](docs/screenshots/10-admin-edit-book.png) | **Admin: users**<br>![Users](docs/screenshots/12-admin-users.png) |
+| **Login**<br>![Login](docs/screenshots/01-login.jpg) | **Book details + reviews**<br>![Book details](docs/screenshots/05-book-details.jpg) |
+| **Locked chapter + voucher error**<br>![Locked chapter](docs/screenshots/04-locked-chapter.jpg) | **My Library**<br>![My Library](docs/screenshots/06-library.jpg) |
+| **Profile**<br>![Profile](docs/screenshots/07-profile.jpg) | **Admin login**<br>![Admin login](docs/screenshots/08-admin-login.jpg) |
+| **Admin: edit a book's chapters**<br>![Edit book](docs/screenshots/10-admin-edit-book.jpg) | **Admin: users**<br>![Users](docs/screenshots/12-admin-users.jpg) |
 
 **Admin: vouchers**
 
-![Vouchers](docs/screenshots/11-admin-vouchers.png)
+![Vouchers](docs/screenshots/11-admin-vouchers.jpg)
+
+**Day & night**
+
+| Login by night | Reading by night |
+|---|---|
+| ![Night login](docs/screenshots/16-night-login.jpg) | ![Night reader](docs/screenshots/18-night-reader.jpg) |
+
+| Reader by day | Admin dashboard |
+|---|---|
+| ![Reader](docs/screenshots/03-reader.jpg) | ![Admin dashboard](docs/screenshots/09-admin-dashboard.jpg) |
 
 **On a phone**
 
-| Store | Menu | Admin |
-|---|---|---|
-| ![Phone store](docs/screenshots/13-phone-store.png) | ![Phone menu](docs/screenshots/14-phone-menu.png) | ![Phone admin](docs/screenshots/15-phone-admin.png) |
+| Store | Store at night | Menu | Admin |
+|---|---|---|---|
+| ![Phone store](docs/screenshots/13-phone-store.jpg) | ![Phone store at night](docs/screenshots/19-phone-night-store.jpg) | ![Phone menu](docs/screenshots/14-phone-menu.jpg) | ![Phone admin](docs/screenshots/15-phone-admin.jpg) |
 
 ---
 
@@ -119,6 +132,13 @@ Checks, in order, each with its own friendly message: already own the book → c
 
 ### Whole books → chapters
 `server/src/utils/splitBook.js` removes the Project Gutenberg licence text, finds chapter headings with a pattern (lines like "CHAPTER I." / "Chapter 1" / "Letter 1"), and cuts the book there. It also re-joins the hard-wrapped lines into paragraphs while keeping poems' line breaks. If no headings are found, it splits the book into equal "Parts". `npm run seed` saves each book by its `slug`, so re-seeding updates books in place without breaking purchases or reviews.
+
+### Design: paper-cut storybook
+- **All art is drawn in code** (SVG), so there are no image files and it stays sharp on any screen: layered paper hills, a little castle, drifting clouds and birds by day, a moon, stars on strings and fireflies by night (`client/src/components/art/`).
+- **Book covers are generated** from each book's colour and genre: a cut-paper motif (🐇 fantasy, 🔍 mystery, ⚡ horror, ♥ romance, 📖 others) with the title on a paper label (`BookCover.jsx`).
+- **Day / night mode:** the sun/moon button flips the whole site. It starts from the device's own setting and remembers your choice. All colours are CSS variables switched by `<html data-theme="day|night">` (`context/ThemeContext.jsx`, `index.css`).
+- **Readable first:** the Reader stays a calm paper page (Literata font, drop cap, adjustable text size). Animations are gentle and switch off for people who choose "reduce motion" on their device.
+- Fonts (Fraunces, Nunito, Literata) are bundled with the app, so it looks the same offline.
 
 ### Website (React)
 - `App.jsx`: every page and its URL (React Router), with the reader area and admin area each behind their own `ProtectedRoute`.
