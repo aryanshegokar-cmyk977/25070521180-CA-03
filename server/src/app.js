@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const voucherRoutes = require('./routes/vouchers');
 const libraryRoutes = require('./routes/library');
+const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/vouchers', voucherRoutes);
 app.use('/api/library', libraryRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
