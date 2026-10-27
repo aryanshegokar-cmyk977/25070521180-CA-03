@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { notFound, errorHandler } = require('./middleware/error');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.use(express.json({ limit: '5mb' })); // reads JSON sent by the client (books
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', app: 'BookVerse' });
 });
+
+app.use('/api/auth', authRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
