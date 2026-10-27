@@ -8,18 +8,22 @@
 [data-theme='day'] {
   color-scheme: light;
   /* sky & scenery */
-  --sky-top: #9fd0e8;
-  --sky-mid: #d6ecef;
-  --sky-bottom: #fde3cb;
-  --glow: #ffe08a;
-  --sun: #ffc451;
-  --cloud: #fffaf2;
-  --hill-1: #cfe3b0;
-  --hill-2: #a3cb8f;
-  --hill-3: #74ad80;
-  --hill-4: #4f8f6e;
-  --tree: #3e7b5d;
-  --trunk: #8a5a3c;
+  --sky-top: #a8d2e6;
+  --sky-mid: #fbe6bd;
+  --sky-bottom: #f6c28f;
+  --glow: #ffd27a;
+  --sun: #ffb84a;
+  --beam: #fff1c4;
+  --cloud: #fff4e2;
+  --hill-1: #ecd59a;
+  --hill-2: #d3b56e;
+  --hill-3: #ad9450;
+  --hill-4: #84743c;
+  --tree: #6f7d3c;
+  --trunk: #7a4e30;
+  --leaf-a: #d9772f;
+  --leaf-b: #b8432f;
+  --leaf-c: #e0a93b;
   --castle: #f6ead6;
   --roof: #e2603f;
   --window: #7d6556;
@@ -51,16 +55,20 @@
 
 [data-theme='night'] {
   color-scheme: dark;
-  --sky-top: #0c1230;
-  --sky-mid: #1b2452;
-  --sky-bottom: #3f3a74;
-  --glow: #f7e2a6;
-  --sun: #f6e3a8;
+  --sky-top: #070d24;
+  --sky-mid: #142046;
+  --sky-bottom: #2b3a6c;
+  --glow: #cfe0ff;
+  --sun: #eef3ff;
+  --beam: #c9dcff;
+  --leaf-a: var(--tree);
+  --leaf-b: var(--tree);
+  --leaf-c: var(--tree);
   --cloud: #2a3463;
-  --hill-1: #364580;
-  --hill-2: #29356b;
-  --hill-3: #1e2853;
-  --hill-4: #141b3d;
+  --hill-1: #33467e;
+  --hill-2: #26356a;
+  --hill-3: #1b2852;
+  --hill-4: #111a3a;
   --tree: #141c3c;
   --trunk: #2a2343;
   --castle: #39437a;
@@ -318,7 +326,7 @@ select { cursor: pointer; }
 .paper-scene, .paper-hills { display: block; max-width: none; }
 .sky { background: linear-gradient(180deg, var(--sky-top), var(--sky-mid) 62%, var(--sky-bottom)); transition: background 0.6s; }
 .scene-hill { transition: fill 0.6s ease; filter: drop-shadow(0 -3px 4px rgba(var(--shadow-rgb), calc(0.12 * var(--shadow-strength)))); }
-[data-theme='night'] .scene-hill { filter: drop-shadow(0 -1.5px 0 rgba(170, 180, 255, 0.14)) drop-shadow(0 -6px 8px rgba(0, 0, 0, 0.35)); }
+[data-theme='night'] .scene-hill { filter: drop-shadow(1px -2px 0 rgba(200, 222, 255, 0.32)) drop-shadow(0 -6px 10px rgba(0, 0, 0, 0.4)); }
 .scene-hill-1 { fill: var(--hill-1); }
 .scene-hill-2 { fill: var(--hill-2); }
 .scene-hill-3 { fill: var(--hill-3); }
@@ -333,7 +341,7 @@ select { cursor: pointer; }
 .scene-flag { transform-box: fill-box; transform-origin: 0 50%; animation: flag 3s ease-in-out infinite; }
 .scene-sun { fill: var(--sun); filter: drop-shadow(0 4px 0 rgba(var(--shadow-rgb), 0.12)); }
 .scene-sun-rays { fill: var(--sun); opacity: 0.8; transform-origin: 960px 92px; animation: spin 60s linear infinite; }
-.scene-moon { fill: var(--sun); filter: drop-shadow(0 0 18px rgba(247, 226, 166, 0.45)); }
+.scene-moon { fill: var(--sun); filter: drop-shadow(0 0 22px rgba(200, 222, 255, 0.6)); }
 .scene-cloud { fill: var(--cloud); filter: drop-shadow(0 6px 4px rgba(var(--shadow-rgb), 0.08)); animation: drift 36s ease-in-out infinite alternate; }
 .scene-birds { fill: none; stroke: var(--bird); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; animation: drift 24s ease-in-out infinite alternate; }
 .scene-string { stroke: var(--muted); stroke-width: 1.2; opacity: 0.7; }
@@ -715,6 +723,43 @@ a.stat-card:hover { transform: translateY(-3px) rotate(-0.5deg); box-shadow: var
   .book-form-preview { width: 120px; }
   .chapter-editor-head select { max-width: 100%; width: 100%; }
 }
+
+/* ---------- Lighting: autumn sunbeams by day, cold moonlight and fog by night ---------- */
+.scene-tree.tone-a { fill: var(--leaf-a); }
+.scene-tree.tone-b { fill: var(--leaf-b); }
+.scene-tree.tone-c { fill: var(--leaf-c); }
+.scene-sunbeams { mix-blend-mode: screen; animation: spin 140s linear infinite; }
+.scene-sunbeams path { opacity: 0.45; animation: sun-pulse 7s ease-in-out infinite; }
+@keyframes sun-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.65; } }
+.scene-moonbeams { mix-blend-mode: screen; }
+.scene-moonbeams path { opacity: 0.22; animation: beam-pulse 9s ease-in-out infinite; }
+.scene-fog ellipse { fill: rgba(200, 216, 255, 0.13); filter: blur(10px); animation: drift 28s ease-in-out infinite alternate; }
+.scene-fog-low ellipse { fill: rgba(200, 216, 255, 0.09); }
+@keyframes beam-pulse { 0%, 100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+/* A soft frame of light: warm haze by day, a cold vignette by night */
+.store-hero::after, .auth-page::after, .admin-auth-page::after { content: ''; position: absolute; inset: 0; pointer-events: none; transition: background 0.8s; }
+[data-theme='day'] .store-hero::after, [data-theme='day'] .auth-page::after { background: radial-gradient(ellipse at 84% 15%, rgba(255, 214, 140, 0.35), transparent 55%); }
+[data-theme='night'] .store-hero::after, [data-theme='night'] .auth-page::after, [data-theme='night'] .admin-auth-page::after { background: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(3, 6, 20, 0.45)); }
+.store-hero > *:not(.store-scene) { z-index: 1; }
+
+/* ---------- Magic air behind the pages ---------- */
+.ambient { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; transition: opacity 0.6s; }
+.ambient-faint { opacity: 0.35; }
+.ambient > div { position: absolute; inset: 0; }
+.container, .footer { position: relative; z-index: 1; }
+.leaf-fall { position: absolute; top: -40px; animation: leaf-fall linear infinite; }
+.leaf { display: block; height: auto; opacity: 0.85; filter: drop-shadow(0 2px 2px rgba(var(--shadow-rgb), 0.2)); animation: leaf-spin 3.5s ease-in-out infinite alternate; }
+.ambient-star { position: absolute; border-radius: 50%; background: #e8f0ff; box-shadow: 0 0 6px #cfe0ff; animation: twinkle 3.8s ease-in-out infinite; }
+.ambient-dust { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: rgba(210, 225, 255, 0.7); box-shadow: 0 0 8px rgba(200, 220, 255, 0.8); animation: dust-float ease-in-out infinite alternate; }
+@keyframes leaf-fall {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(var(--sway), 27vh); }
+  50% { transform: translate(0, 55vh); }
+  75% { transform: translate(calc(var(--sway) * -1), 82vh); }
+  100% { transform: translate(0, 112vh); }
+}
+@keyframes leaf-spin { from { transform: rotate(-40deg) rotateY(0deg); } to { transform: rotate(50deg) rotateY(160deg); } }
+@keyframes dust-float { from { transform: translate(0, 0); opacity: 0.2; } 50% { opacity: 0.9; } to { transform: translate(60px, -90px); opacity: 0.2; } }
 
 /* =====================================================================
    Pop-up storybook: moving scenery, reading tracker, tickets & stamps

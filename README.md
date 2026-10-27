@@ -141,8 +141,10 @@ Checks, in order, each with its own friendly message: already own the book → c
 
 ### Design: paper-cut storybook
 - **All art is drawn in code** (SVG), so there are no image files and it stays sharp on any screen: layered paper hills, a little castle, drifting clouds and birds by day, a moon, stars on strings and fireflies by night (`client/src/components/art/`).
-- **Book covers are generated** from each book's colour: a cut-paper motif for each book (🐇 Alice, 🔍 Sherlock, ⚡ Frankenstein, ♥ Pride and Prejudice, 🦇 Dracula, ⏳ Time Machine, 🧰 treasure chest, 🌪️ Oz, 🥂 Gatsby, 🗝️ Secret Garden, ⭐ Peter Pan, 🎈 Around the World) with the title on a paper label. Hover a card and the motif pops up like a pop-up book (`BookCover.jsx`, `art/Motif.jsx`).
+- **Book covers are generated** from each book's colour: a cut-paper motif for each book (🐇 Alice, 🔍 Sherlock, ⚡ Frankenstein, ♥ Pride and Prejudice, 🦇 Dracula, ⏳ Time Machine, 🧰 treasure chest, 🌪️ Oz, 🥂 Gatsby, 🗝️ Secret Garden, ⭐ Peter Pan, 🎈 Around the World, 🐾 Hound of the Baskervilles, 🛸 War of the Worlds, 🕯️ Jane Eyre) with the title on a paper label. Hover a card and the motif pops up like a pop-up book (`BookCover.jsx`, `art/Motif.jsx`).
 - **Day ⇄ night show:** the sun and moon sit on one big turning "sky wheel", so switching modes makes the sun set behind the hills while the moon rises; paper stars are lowered on strings, clouds slide away, castle windows flicker, fireflies and a shooting star come out. The hills shift slightly with the mouse (parallax).
+- **Lighting:** day is a golden autumn afternoon (honey hills, orange and red trees, sunbeams fanning from the sun, a warm haze); night is cold moonlight (silver-blue rim light on the hills, moonbeams, drifting fog, a dark vignette, castle windows as the only warm light).
+- **Magic air:** behind every reader page, dry leaves drift down by day and stars twinkle with silver dust by night, filling the empty space at the sides (fainter on the Reader page) (`art/AmbientLayer.jsx`).
 - **Paper props:** the voucher box is a ticket (it shakes on a wrong code and throws paper confetti on a right one), locked chapters carry a red wax seal.
 - **Day / night mode:** the sun/moon button flips the whole site. It starts from the device's own setting and remembers your choice. All colours are CSS variables switched by `<html data-theme="day|night">` (`context/ThemeContext.jsx`, `index.css`).
 - **Readable first:** the Reader stays a calm paper page (Literata font, drop cap, adjustable text size). Animations are gentle and switch off for people who choose "reduce motion" on their device.
@@ -213,7 +215,7 @@ npm install
 ```
 npm run seed
 ```
-*(fills the database with the 12 books, the admin account and the test vouchers)*
+*(fills the database with the 15 books, the admin account and the test vouchers)*
 
 ```
 npm run dev

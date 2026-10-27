@@ -140,5 +140,42 @@
     "coverColor": "#b5562f",
     "summary": "Calm, precise Phileas Fogg bets his fortune that he can circle the globe in just eighty days. With his loyal servant Passepartout, and a detective on his tail, he races by train, steamer and even elephant.",
     "textFile": "around-the-world.txt"
+  },
+  {
+    "slug": "hound-of-the-baskervilles",
+    "title": "The Hound of the Baskervilles",
+    "author": "Arthur Conan Doyle",
+    "year": 1902,
+    "genre": "Mystery",
+    "gutenbergId": 2852,
+    "coverColor": "#3b4a3f",
+    "summary": "A giant spectral hound is said to haunt the Baskerville family on the lonely moors of Dartmoor. When Sir Charles is found dead with terror on his face, Sherlock Holmes and Dr. Watson must protect the young heir before the legend strikes again.",
+    "textFile": "hound-of-the-baskervilles.txt"
+  },
+  {
+    "slug": "war-of-the-worlds",
+    "title": "The War of the Worlds",
+    "author": "H. G. Wells",
+    "year": 1898,
+    "genre": "Science Fiction",
+    "gutenbergId": 36,
+    "coverColor": "#8a3b2e",
+    "summary": "A falling star lands on Horsell Common, and out of it climb the Martians. Towering three-legged machines march across England while one man struggles to survive and find his way home.",
+    "textFile": "war-of-the-worlds.txt",
+    "chapterPattern": "^[IVX]+\\.\\n\\n+[A-Z][^\\n]*$",
+    "ignoreCase": false
+  },
+  {
+    "slug": "jane-eyre",
+    "title": "Jane Eyre",
+    "author": "Charlotte Brontë",
+    "year": 1847,
+    "genre": "Romance",
+    "gutenbergId": 1260,
+    "coverColor": "#5b4b7a",
+    "summary": "Orphaned and unloved, Jane Eyre grows up proud and independent. As governess at mysterious Thornfield Hall she falls for its brooding master, Mr. Rochester, but the house is hiding a terrible secret.",
+    "textFile": "jane-eyre.txt",
+    "chapterPattern": "^CHAPTER [IVXL]+\\b.*$",
+    "ignoreCase": false
   }
 ]

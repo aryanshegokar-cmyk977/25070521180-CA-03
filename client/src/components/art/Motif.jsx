@@ -1,6 +1,37 @@
 // Simple paper-cut silhouettes used on book covers and empty states.
 // Each one is drawn inside a 100 x 100 box.
 const MOTIFS = {
+  paw: (
+    <>
+      <path d="M50 52 C 36 52, 24 66, 26 78 C 28 88, 40 86, 50 84 C 60 86, 72 88, 74 78 C 76 66, 64 52, 50 52 Z" />
+      <ellipse cx="24" cy="44" rx="8" ry="11" transform="rotate(-20 24 44)" />
+      <ellipse cx="40" cy="28" rx="8" ry="12" transform="rotate(-6 40 28)" />
+      <ellipse cx="60" cy="28" rx="8" ry="12" transform="rotate(6 60 28)" />
+      <ellipse cx="76" cy="44" rx="8" ry="11" transform="rotate(20 76 44)" />
+    </>
+  ),
+  tripod: (
+    <>
+      <path d="M26 42 C 26 18, 74 18, 74 42 Z" />
+      <rect x="22" y="40" width="56" height="9" rx="4.5" />
+      <path d="M36 48 H42 L22 94 H15 Z" />
+      <rect x="47" y="48" width="6" height="46" rx="2" />
+      <path d="M58 48 H64 L85 94 H78 Z" />
+      <circle className="motif-cut" cx="50" cy="32" r="6" />
+      <circle cx="50" cy="32" r="2.4" />
+    </>
+  ),
+  candle: (
+    <>
+      <path d="M50 6 C 60 20, 60 30, 50 34 C 40 30, 40 20, 50 6 Z" />
+      <path className="motif-cut" d="M50 18 C 54 24, 54 28, 50 30 C 46 28, 46 24, 50 18 Z" />
+      <rect x="49" y="33" width="2" height="5" />
+      <path d="M41 38 H59 V80 H41 Z" />
+      <path className="motif-cut" d="M45 38 V50 a2.5 2.5 0 0 0 5 0 V38 Z" />
+      <path d="M18 80 H82 C 82 90, 68 94, 50 94 C 32 94, 18 90, 18 80 Z" />
+      <path d="M84 74 a9 9 0 1 0 0.1 0 Z M84 78 a5 5 0 1 1 -0.1 0 Z" fillRule="evenodd" />
+    </>
+  ),
   bat: (
     <>
       <path d="M50 42 C 44 32, 32 30, 26 38 C 18 32, 6 36, 2 46 C 12 44, 18 50, 20 58 C 26 52, 34 54, 38 62 C 42 56, 46 56, 50 60 C 54 56, 58 56, 62 62 C 66 54, 74 52, 80 58 C 82 50, 88 44, 98 46 C 94 36, 82 32, 74 38 C 68 30, 56 32, 50 42 Z" />
@@ -119,6 +150,9 @@ const BOOK_MOTIF = {
   'secret-garden': 'key',
   'peter-pan': 'star',
   'around-the-world': 'balloon',
+  'hound-of-the-baskervilles': 'paw',
+  'war-of-the-worlds': 'tripod',
+  'jane-eyre': 'candle',
 };
 const GENRE_MOTIF = {
   fantasy: 'rabbit', mystery: 'magnifier', horror: 'bolt', romance: 'heart',

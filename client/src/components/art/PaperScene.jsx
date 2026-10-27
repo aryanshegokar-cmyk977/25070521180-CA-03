@@ -22,8 +22,9 @@ const HILLS = {
 // The castle's own hill: a rounded mound with a flat top, so the castle stands on solid ground.
 const CASTLE_HILL = 'M700 300 C 760 252, 800 192, 850 186 H930 C 980 192, 1020 252, 1080 300 Z';
 
-// The sun and moon turn around this point. Sun on top by day, moon on the opposite side.
-const WHEEL = { x: 1210, y: 580, r: 470 };
+// The sun and moon turn around a point below the hills (x is set per page with the skyX prop).
+// Sun on top by day, moon on the opposite side.
+const WHEEL = { y: 580, r: 470 };
 const SKY_Y = WHEEL.y - WHEEL.r; // = 110, where the sun / moon sits when it is "up"
 
 // [x, string length, size, delay] - kept clear of the moon and the castle
@@ -63,10 +64,11 @@ function Cloud({ x, y, s, d }) {
   );
 }
 
-function Tree({ x, y, s = 1, kind = 'round', delay = 0 }) {
+// tone a / b / c gives each tree its own autumn colour by day (all dark at night).
+function Tree({ x, y, s = 1, kind = 'round', delay = 0, tone = 'a' }) {
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <g className="scene-tree" style={{ animationDelay: `${delay}s` }}>
+      <g className={`scene-tree tone-${tone}`} style={{ animationDelay: `${delay}s` }}>
         <rect className="scene-trunk" x="-3" y="-6" width="6" height="22" rx="2" />
         {kind === 'round' ? (
           <circle cx="0" cy="-20" r="17" />
@@ -108,7 +110,9 @@ function Castle() {
   );
 }
 
-export default function PaperScene({ className = '' }) {
+// skyX: where the sun and moon sit across the scene (0-1440). Tall pages crop the sides,
+// so the login pages bring them in closer to the middle.
+export default function PaperScene({ className = '', skyX = 1210 }) {
   const svgRef = useRef(null);
 
   // Parallax: move the layers a few pixels with the mouse.
@@ -148,6 +152,10 @@ export default function PaperScene({ className = '' }) {
           <stop offset="0" style={{ stopColor: 'var(--glow)', stopOpacity: 0.55 }} />
           <stop offset="1" style={{ stopColor: 'var(--glow)', stopOpacity: 0 }} />
         </radialGradient>
+        <linearGradient id="scene-beam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" style={{ stopColor: 'var(--beam)', stopOpacity: 0.55 }} />
+          <stop offset="1" style={{ stopColor: 'var(--beam)', stopOpacity: 0 }} />
+        </linearGradient>
       </defs>
 
       {/* Night sky: twinkling stars, plus a shooting star now and then */}
@@ -167,24 +175,42 @@ export default function PaperScene({ className = '' }) {
 
       {/* The sky wheel: sun on top (day), moon on the opposite side (night) */}
       <g className="parallax parallax-sky">
-        <g className="sky-wheel" style={{ transformOrigin: `${WHEEL.x}px ${WHEEL.y}px` }}>
+        <g className="sky-wheel" style={{ transformOrigin: `${skyX}px ${WHEEL.y}px` }}>
           <g>
-            <circle cx={WHEEL.x} cy={SKY_Y} r="120" fill="url(#scene-glow)" />
-            <g className="scene-sun-rays" style={{ transformOrigin: `${WHEEL.x}px ${SKY_Y}px` }}>
+            <circle cx={skyX} cy={SKY_Y} r="120" fill="url(#scene-glow)" />
+            <g className="scene-sun-rays" style={{ transformOrigin: `${skyX}px ${SKY_Y}px` }}>
               {Array.from({ length: 12 }, (_, i) => (
-                <rect key={i} x={WHEEL.x - 5} y={SKY_Y - 70} width="10" height="26" rx="5" transform={`rotate(${i * 30} ${WHEEL.x} ${SKY_Y})`} />
+                <rect key={i} x={skyX - 5} y={SKY_Y - 70} width="10" height="26" rx="5" transform={`rotate(${i * 30} ${skyX} ${SKY_Y})`} />
               ))}
             </g>
-            <circle className="scene-sun" cx={WHEEL.x} cy={SKY_Y} r="42" />
+            <circle className="scene-sun" cx={skyX} cy={SKY_Y} r="42" />
           </g>
           {/* Upside down here, so it is the right way up once the wheel has turned */}
-          <g transform={`rotate(180 ${WHEEL.x} ${WHEEL.y})`}>
-            <circle cx={WHEEL.x} cy={SKY_Y} r="130" fill="url(#scene-glow)" />
-            <path className="scene-moon" d={`M${WHEEL.x + 25} ${SKY_Y + 48} A50 50 0 1 1 ${WHEEL.x + 8} ${SKY_Y - 48} A40 40 0 0 0 ${WHEEL.x + 25} ${SKY_Y + 48}Z`} />
-            <circle className="scene-moon-crater" cx={WHEEL.x - 20} cy={SKY_Y - 10} r="6" />
-            <circle className="scene-moon-crater" cx={WHEEL.x - 10} cy={SKY_Y + 22} r="4" />
+          <g transform={`rotate(180 ${skyX} ${WHEEL.y})`}>
+            <circle cx={skyX} cy={SKY_Y} r="130" fill="url(#scene-glow)" />
+            <path className="scene-moon" d={`M${skyX + 25} ${SKY_Y + 48} A50 50 0 1 1 ${skyX + 8} ${SKY_Y - 48} A40 40 0 0 0 ${skyX + 25} ${SKY_Y + 48}Z`} />
+            <circle className="scene-moon-crater" cx={skyX - 20} cy={SKY_Y - 10} r="6" />
+            <circle className="scene-moon-crater" cx={skyX - 10} cy={SKY_Y + 22} r="4" />
           </g>
         </g>
+      </g>
+
+      {/* Light: sunbeams fan out from the sun by day, cold moonbeams slant down at night */}
+      <g className="day-only scene-sunbeams" style={{ transformOrigin: `${skyX}px ${SKY_Y}px` }}>
+        {[-25, 8, 34, 60, 86].map((angle, i) => (
+          <path
+            key={angle}
+            d={`M${skyX} ${SKY_Y} L${skyX - 34} ${SKY_Y + 520} L${skyX + 34} ${SKY_Y + 520} Z`}
+            transform={`rotate(${angle} ${skyX} ${SKY_Y})`}
+            fill="url(#scene-beam)"
+            style={{ animationDelay: `${i * 1.1}s` }}
+          />
+        ))}
+      </g>
+      <g className="night-only scene-moonbeams">
+        <path d={`M${skyX - 30} ${SKY_Y + 30} L${skyX - 330} 420 L${skyX - 200} 420 Z`} fill="url(#scene-beam)" />
+        <path d={`M${skyX - 10} ${SKY_Y + 45} L${skyX - 120} 420 L${skyX - 40} 420 Z`} fill="url(#scene-beam)" style={{ animationDelay: '2s' }} />
+        <path d={`M${skyX + 20} ${SKY_Y + 45} L${skyX + 60} 420 L${skyX + 150} 420 Z`} fill="url(#scene-beam)" style={{ animationDelay: '4s' }} />
       </g>
 
       {/* Paper stars lowered on strings at night */}
@@ -217,22 +243,27 @@ export default function PaperScene({ className = '' }) {
         <path className="scene-hill scene-hill-1" d={CASTLE_HILL} />
         <path className="scene-path" d="M890 190 C 872 210, 920 222, 896 244 S 880 276, 904 300" />
         <Castle />
-        <Tree x={812} y={214} s={0.55} kind="pine" delay={0.4} />
-        <Tree x={972} y={214} s={0.5} delay={1.1} />
+        <Tree x={812} y={214} s={0.55} kind="pine" delay={0.4} tone="c" />
+        <Tree x={972} y={214} s={0.5} delay={1.1} tone="b" />
+      </g>
+
+      <g className="night-only scene-fog">
+        <ellipse cx="300" cy="262" rx="340" ry="22" />
+        <ellipse cx="1050" cy="250" rx="380" ry="20" style={{ animationDelay: '-9s' }} />
       </g>
 
       <g className="parallax parallax-mid">
         <path className="scene-hill scene-hill-2" d={HILLS.mid} />
         <Tree x={1180} y={262} s={1} kind="pine" delay={0.2} />
-        <Tree x={1215} y={268} s={0.75} delay={0.9} />
+        <Tree x={1215} y={268} s={0.75} delay={0.9} tone="b" />
       </g>
 
       <g className="parallax parallax-near">
         <path className="scene-hill scene-hill-3" d={HILLS.near} />
         <Tree x={560} y={330} s={0.9} kind="pine" delay={0.5} />
-        <Tree x={640} y={338} s={0.75} delay={1.4} />
+        <Tree x={640} y={338} s={0.75} delay={1.4} tone="c" />
         <Tree x={90} y={350} s={0.8} kind="pine" delay={0.7} />
-        <Tree x={1360} y={338} s={1.1} delay={0} />
+        <Tree x={1360} y={338} s={1.1} delay={0} tone="b" />
 
         <g className="day-only">
           {BUTTERFLIES.map(([x, y, d]) => <Butterfly key={x} x={x} y={y} delay={d} />)}
@@ -242,6 +273,10 @@ export default function PaperScene({ className = '' }) {
             <circle key={i} className="scene-firefly" cx={x} cy={y} r="3" style={{ animationDelay: `${i * 0.9}s` }} />
           ))}
         </g>
+      </g>
+
+      <g className="night-only scene-fog scene-fog-low">
+        <ellipse cx="700" cy="350" rx="520" ry="18" />
       </g>
 
       <g className="parallax parallax-front">

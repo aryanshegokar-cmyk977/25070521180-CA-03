@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="admin-auth-page sky">
-      <PaperScene className="auth-scene scene-muted" />
+      <PaperScene className="auth-scene scene-muted" skyX={720} />
       <ThemeToggle className="auth-theme-toggle" />
       <section className="admin-auth-card card">
         <div className="admin-auth-brand">

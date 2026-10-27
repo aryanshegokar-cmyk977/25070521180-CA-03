@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page sky">
-      <PaperScene className="auth-scene" />
+      <PaperScene className="auth-scene" skyX={720} />
       <ThemeToggle className="auth-theme-toggle" />
 
       <section className="auth-hero">
