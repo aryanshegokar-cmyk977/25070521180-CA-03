@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Book = require('../models/Book');
 const Purchase = require('../models/Purchase');
 const Voucher = require('../models/Voucher');
@@ -18,7 +19,7 @@ router.post('/buy', async (req, res) => {
   const code = String(req.body?.code || '').trim().toUpperCase();
   if (!code) throw httpError(400, 'Please enter a voucher code');
 
-  const book = await Book.findById(bookId).select('title');
+  const book = mongoose.isValidObjectId(bookId) ? await Book.findById(bookId).select('title') : null;
   if (!book) throw httpError(404, 'Book not found');
 
   // 1. Already own the book?
@@ -57,7 +58,7 @@ router.post('/buy', async (req, res) => {
       $expr: { $lt: ['$usedCount', '$maxUses'] },
     },
     { $inc: { usedCount: 1 }, $addToSet: { usedBy: req.user._id } },
-    { new: true }
+    { returnDocument: 'after' }
   );
   if (!used) throw httpError(400, `Sorry, the code ${code} has just been used up.`);
 
@@ -89,7 +90,7 @@ router.put('/:id', async (req, res) => {
   const purchase = await Purchase.findOneAndUpdate(
     { _id: req.params.id, user: req.user._id },
     { status },
-    { new: true }
+    { returnDocument: 'after' }
   ).populate('book', 'title author coverColor genre year slug');
   if (!purchase) throw httpError(404, 'That book is not in your library');
   res.json(purchase);

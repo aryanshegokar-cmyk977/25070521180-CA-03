@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const Book = require('../models/Book');
 const Review = require('../models/Review');
 const { protect } = require('../middleware/auth');
@@ -19,7 +20,7 @@ router.get('/book/:bookId', async (req, res) => {
 // POST /api/reviews  { bookId, rating, comment }  - write a review
 router.post('/', async (req, res) => {
   const { bookId, rating, comment } = req.body || {};
-  if (!(await Book.exists({ _id: bookId }))) throw httpError(404, 'Book not found');
+  if (!mongoose.isValidObjectId(bookId) || !(await Book.exists({ _id: bookId }))) throw httpError(404, 'Book not found');
 
   if (await Review.exists({ user: req.user._id, book: bookId })) {
     throw httpError(400, 'You already reviewed this book. You can edit your review instead.');

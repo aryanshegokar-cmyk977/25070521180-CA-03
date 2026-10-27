@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "pride-and-prejudice",
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "genre": "Romance",
+    "gutenbergId": 1342,
+    "coverColor": "#b5476b",
+    "summary": "Elizabeth Bennet, the sharp-witted second of five sisters, clashes with the proud and wealthy Mr. Darcy. Through first impressions, family scandal and second chances, both learn how pride and prejudice can blind the heart.",
+    "textFile": "pride-and-prejudice.txt"
+  },
+  {
+    "slug": "alice-in-wonderland",
+    "title": "Alice's Adventures in Wonderland",
+    "author": "Lewis Carroll",
+    "year": 1865,
+    "genre": "Fantasy",
+    "gutenbergId": 11,
+    "coverColor": "#2a9d8f",
+    "summary": "Bored on a riverbank, young Alice follows a White Rabbit down a rabbit-hole into Wonderland, a world of shrinking potions, a grinning Cheshire Cat, a mad tea-party and a Queen who shouts \"Off with their heads!\"",
+    "textFile": "alice-in-wonderland.txt"
+  },
+  {
+    "slug": "sherlock-holmes",
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "genre": "Mystery",
+    "gutenbergId": 1661,
+    "coverColor": "#264653",
+    "summary": "Twelve cases solved by the brilliant detective Sherlock Holmes, told by his loyal friend Dr. Watson, from A Scandal in Bohemia to The Red-Headed League and The Speckled Band.",
+    "textFile": "sherlock-holmes.txt",
+    "chapterPattern": "^(?:ADVENTURE +)?[IVXL]+\\. +[A-Z][A-Z'’ ,.-]+$",
+    "ignoreCase": false
+  },
+  {
+    "slug": "frankenstein",
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "genre": "Horror",
+    "gutenbergId": 84,
+    "coverColor": "#5a3e2b",
+    "summary": "Young scientist Victor Frankenstein builds a living creature from lifeless matter, then abandons it in horror. Rejected by everyone, the creature turns on its maker in this founding classic of science fiction.",
+    "textFile": "frankenstein.txt"
+  }
+]
