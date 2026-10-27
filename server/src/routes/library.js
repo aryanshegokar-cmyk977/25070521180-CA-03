@@ -36,7 +36,7 @@ router.post('/buy', async (req, res) => {
   // 3. Has it expired?
   const now = new Date();
   if (voucher.expiresAt && voucher.expiresAt < now) {
-    throw httpError(400, `Sorry, the code ${code} expired on ${voucher.expiresAt.toDateString()}.`);
+    throw httpError(400, `Sorry, the code ${code} expired on ${voucher.expiresAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.`);
   }
 
   // 4. Are all its uses gone?

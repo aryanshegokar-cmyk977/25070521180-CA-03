@@ -12,6 +12,7 @@ export default function BookDetailsPage() {
   const [book, setBook] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showAll, setShowAll] = useState(false); // long books show the first 12 chapters until expanded
 
   const load = useCallback(() => {
     return api
@@ -33,6 +34,7 @@ export default function BookDetailsPage() {
   }
 
   const lockedCount = book.chapters.filter((c) => c.locked).length;
+  const visibleChapters = showAll ? book.chapters : book.chapters.slice(0, 12);
 
   return (
     <>
@@ -78,7 +80,7 @@ export default function BookDetailsPage() {
       <section className="chapter-list-section">
         <h2>Chapters</h2>
         <ol className="chapter-list">
-          {book.chapters.map((ch) => (
+          {visibleChapters.map((ch) => (
             <li key={ch.number}>
               <Link to={`/read/${book._id}/${ch.number}`} className={ch.locked ? 'locked' : ''}>
                 <span className="chapter-num">{ch.number}</span>
@@ -88,6 +90,11 @@ export default function BookDetailsPage() {
             </li>
           ))}
         </ol>
+        {book.chapters.length > 12 && (
+          <button className="btn btn-secondary show-all" onClick={() => setShowAll(!showAll)}>
+            {showAll ? 'Show fewer chapters' : `Show all ${book.chapters.length} chapters`}
+          </button>
+        )}
       </section>
 
       <Reviews bookId={book._id} onChange={load} />

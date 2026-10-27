@@ -54,6 +54,7 @@ img { max-width: 100%; }
   padding: 0.6rem 1.1rem; border-radius: 10px; border: 1px solid transparent;
   font: inherit; font-weight: 600; font-size: 0.95rem; text-decoration: none;
   cursor: pointer; transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
 }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -209,6 +210,8 @@ textarea { resize: vertical; min-height: 6rem; }
 .buy-box label { font-weight: 600; font-size: 0.92rem; }
 .buy-box-row { display: flex; gap: 0.5rem; }
 .buy-box-row input { text-transform: uppercase; letter-spacing: 0.05em; }
+.buy-box-row input::placeholder { text-transform: none; letter-spacing: normal; }
+.show-all { margin-top: 0.75rem; }
 
 .chapter-list-section { margin-bottom: 2.5rem; }
 .chapter-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem; }
