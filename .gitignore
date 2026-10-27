@@ -1,0 +1,14 @@
+# Installed packages (re-created by "npm install")
+node_modules/
+
+# Secret settings (each computer has its own copy)
+.env
+
+# Build output
+dist/
+
+# Editor / system junk
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
