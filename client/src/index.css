@@ -238,3 +238,31 @@ textarea { resize: vertical; min-height: 6rem; }
   .details-cover .book-cover-large { max-width: 190px; font-size: 1rem; }
   .buy-box-row { flex-direction: column; }
 }
+
+/* ---------- Reader ---------- */
+.reader { display: grid; grid-template-columns: 270px 1fr; gap: 2rem; align-items: start; }
+.reader-sidebar { position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow-y: auto; padding-right: 0.5rem; }
+.reader-toc { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.reader-toc a { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.45rem 0.65rem; border-radius: 8px; color: var(--text); text-decoration: none; font-size: 0.9rem; }
+.reader-toc a:hover { background: rgba(0, 0, 0, 0.04); }
+.reader-toc a.current { background: var(--primary-soft); color: var(--primary-dark); font-weight: 700; }
+.reader-toc a.locked { color: var(--muted); }
+
+.reader-main { min-width: 0; max-width: 46rem; }
+.reader-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.reader-toc-toggle { display: none; }
+.reader-title { margin-bottom: 1.5rem; }
+.reader-text { font-family: var(--serif); line-height: 1.8; }
+.reader-text p { margin: 0 0 1.1em; white-space: pre-line; }
+.reader-nav { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+.locked-panel { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 2.5rem 1.5rem; }
+.locked-panel .buy-box { width: min(100%, 26rem); text-align: left; }
+.lock-icon { font-size: 3rem; }
+
+@media (max-width: 860px) {
+  .reader { grid-template-columns: 1fr; gap: 1rem; }
+  .reader-toc-toggle { display: inline-flex; }
+  .reader-sidebar { display: none; position: static; max-height: 50vh; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; }
+  .reader-sidebar.open { display: block; }
+}
