@@ -11,6 +11,10 @@ const purchaseSchema = new mongoose.Schema(
       enum: ['To Read', 'Reading', 'Finished'],
       default: 'To Read',
     },
+    // Reading tracker: which chapters have been opened, and where the reader stopped.
+    chaptersRead: { type: [Number], default: [] },
+    lastChapter: { type: Number, default: 1 },
+    lastReadAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

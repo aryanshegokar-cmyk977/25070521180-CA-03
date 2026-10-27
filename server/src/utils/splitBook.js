@@ -86,7 +86,7 @@ function splitBook(rawText, options = {}) {
   headings.forEach((match, i) => {
     const bodyStart = match.index + match[0].length;
     const bodyEnd = i + 1 < headings.length ? headings[i + 1].index : text.length;
-    const title = match[0].trim();
+    const title = match[0].replace(/\s+/g, ' ').trim(); // a heading can span two lines ("I" + "Introduction")
     const content = tidyParagraphs(text.slice(bodyStart, bodyEnd));
     if (content.length < minChapterLength) skipped.push(title);
     else chapters.push({ title, content });

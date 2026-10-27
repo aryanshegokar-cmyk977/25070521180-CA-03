@@ -20,6 +20,12 @@ const userSchema = new mongoose.Schema(
       select: false, // not returned by queries unless asked for
     },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    // Reading streak: days in a row with at least one chapter read. lastDay is "YYYY-MM-DD".
+    streak: {
+      current: { type: Number, default: 0 },
+      best: { type: Number, default: 0 },
+      lastDay: { type: String, default: null },
+    },
   },
   { timestamps: true }
 );
