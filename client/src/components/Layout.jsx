@@ -1,7 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import PaperHills from './art/PaperHills';
 
-// The frame around every logged-in page: navbar on top, page below.
+// The frame around every reader page: navbar on top, page in the middle, paper hills at the bottom.
 export default function Layout() {
   return (
     <>
@@ -9,7 +10,10 @@ export default function Layout() {
       <main className="container">
         <Outlet />
       </main>
-      <footer className="footer">BookVerse · Classic books from Project Gutenberg</footer>
+      <footer className="footer">
+        <PaperHills />
+        <p>BookVerse · Classic books from Project Gutenberg</p>
+      </footer>
     </>
   );
 }

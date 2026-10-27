@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import BookCover from '../components/BookCover';
 import StarRating from '../components/StarRating';
 import Loader from '../components/Loader';
+import PaperScene from '../components/art/PaperScene';
+import Motif from '../components/art/Motif';
 
 export default function StorePage() {
   const { user } = useAuth();
@@ -37,11 +39,17 @@ export default function StorePage() {
 
   return (
     <>
-      <section className="store-hero">
-        <div>
-          <h1>Hello, {user.name.split(' ')[0]} 👋</h1>
-          <p>Discover timeless classics. The first chapter of every book is free to read.</p>
+      <section className="store-hero sky">
+        <PaperScene className="store-scene" />
+        <div className="store-hero-text">
+          <span className="eyebrow">Once upon a time…</span>
+          <h1>Hello, {user.name.split(' ')[0]}!</h1>
+          <p>Pick a classic. The first chapter of every book is free to read.</p>
         </div>
+      </section>
+
+      <section className="store-toolbar">
+        <h2>The shelf</h2>
         <div className="filters">
           <input
             type="search"
@@ -65,6 +73,7 @@ export default function StorePage() {
         <Loader text="Loading books..." />
       ) : books.length === 0 ? (
         <div className="empty-state">
+          <Motif name="magnifier" className="empty-art" />
           <h2>No books found</h2>
           <p className="muted">Try a different search or genre.</p>
         </div>

@@ -23,7 +23,7 @@ router.get('/stats', async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(6)
       .populate('user', 'name email')
-      .populate('book', 'title coverColor'),
+      .populate('book', 'title coverColor genre'),
   ]);
 
   res.json({

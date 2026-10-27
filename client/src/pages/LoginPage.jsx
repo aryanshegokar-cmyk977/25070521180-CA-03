@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { errorMessage } from '../api';
+import PaperScene from '../components/art/PaperScene';
+import ThemeToggle from '../components/ThemeToggle';
+import Logo from '../components/Logo';
 
 export default function LoginPage() {
   const { user, login, register } = useAuth();
@@ -38,18 +41,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page sky">
+      <PaperScene className="auth-scene" />
+      <ThemeToggle className="auth-theme-toggle" />
+
       <section className="auth-hero">
+        <div className="auth-logo"><Logo size={52} /></div>
         <h1>BookVerse</h1>
-        <p>Your pocket library of timeless classics. Read the first chapter of any book for free, unlock the rest with a voucher, and share what you think.</p>
-        <ul>
-          <li>📖 Free preview of every book</li>
-          <li>🎟️ Unlock books with voucher codes</li>
-          <li>⭐ Rate and review your reads</li>
+        <p>A pocket library of timeless classics. Read the first chapter of any book for free, unlock the rest with a voucher, and tell the world what you thought.</p>
+        <ul className="auth-perks">
+          <li>📖 Free first chapter</li>
+          <li>🎟️ Unlock with vouchers</li>
+          <li>⭐ Rate &amp; review</li>
         </ul>
       </section>
 
-      <section className="auth-card card">
+      <section className="auth-card card hanging-sign">
         <div className="tabs">
           <button className={mode === 'login' ? 'active' : ''} onClick={() => switchMode('login')}>Log in</button>
           <button className={mode === 'signup' ? 'active' : ''} onClick={() => switchMode('signup')}>Sign up</button>

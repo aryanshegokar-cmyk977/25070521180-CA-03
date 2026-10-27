@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { errorMessage } from '../api';
+import PaperScene from '../components/art/PaperScene';
+import ThemeToggle from '../components/ThemeToggle';
+import Logo from '../components/Logo';
 
 // Separate login page for staff. No sign-up here: admin accounts come from the seed script.
 export default function AdminLoginPage() {
@@ -30,10 +33,12 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="admin-auth-page">
-      <section className="admin-auth-card">
+    <div className="admin-auth-page sky">
+      <PaperScene className="auth-scene scene-muted" />
+      <ThemeToggle className="auth-theme-toggle" />
+      <section className="admin-auth-card card">
         <div className="admin-auth-brand">
-          <img src="/favicon.svg" alt="" width="40" height="40" />
+          <Logo size={40} />
           <div>
             <strong>BookVerse</strong>
             <span>Admin Console</span>

@@ -4,6 +4,7 @@ import api, { errorMessage } from '../api';
 import BookCover from '../components/BookCover';
 import Loader from '../components/Loader';
 import { recall } from '../storage';
+import Motif from '../components/art/Motif';
 
 const STATUSES = ['To Read', 'Reading', 'Finished'];
 
@@ -54,6 +55,7 @@ export default function LibraryPage() {
 
       {shown.length === 0 ? (
         <div className="empty-state">
+          <Motif name="book" className="empty-art" />
           <h2>{items.length ? `Nothing in "${filter}"` : 'Your library is empty'}</h2>
           <p className="muted">{items.length ? 'Change a book\'s tag to move it here.' : 'Buy a book with a voucher code and it will appear here.'}</p>
           {!items.length && <Link to="/" className="btn btn-primary">Browse the Store</Link>}

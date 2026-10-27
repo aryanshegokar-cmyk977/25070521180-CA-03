@@ -1,31 +1,28 @@
-// Draws a book cover from a colour + the title, so no images are needed.
+import Motif, { motifFor } from './art/Motif';
+
+// Draws a paper-cut book cover from the book's colour, genre and title (no images needed).
+// Layers: coloured card -> pale moon -> back hill -> cut-out motif -> front hill -> title label.
 export default function BookCover({ book, size = 'medium' }) {
-  const color = book.coverColor || '#4338ca';
   return (
     <div
       className={`book-cover book-cover-${size}`}
-      style={{ background: `linear-gradient(145deg, ${color}, ${shade(color, -35)})` }}
+      style={{ '--cover': book.coverColor || '#e2603f' }}
+      role="img"
       aria-label={`Cover of ${book.title}`}
     >
-      <div className="book-cover-spine" />
-      <div className="book-cover-text">
-        <span className="book-cover-title">{book.title}</span>
-        <span className="book-cover-rule" />
-        <span className="book-cover-author">{book.author}</span>
-      </div>
+      <svg className="book-cover-art" viewBox="0 0 200 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <rect width="200" height="300" className="cover-bg" />
+        <circle cx="160" cy="124" r="22" className="cover-moon" />
+        <path className="cover-hill cover-hill-back" d="M0 232 C 50 200, 100 206, 140 226 S 190 214, 200 208 V300 H0Z" />
+        <Motif name={motifFor(book)} className="cover-motif" x="50" y="146" width="100" height="100" />
+        <path className="cover-hill cover-hill-front" d="M0 262 C 60 240, 120 252, 200 238 V300 H0Z" />
+      </svg>
+      {size !== 'small' && (
+        <>
+          <span className="book-cover-title">{book.title}</span>
+          {book.author && <span className="book-cover-author">{book.author}</span>}
+        </>
+      )}
     </div>
   );
-}
-
-// Makes a hex colour lighter (positive amount) or darker (negative amount).
-function shade(hex, amount) {
-  const clean = hex.replace('#', '');
-  const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean;
-  const num = parseInt(full, 16);
-  if (Number.isNaN(num)) return hex;
-  const clamp = (v) => Math.max(0, Math.min(255, v));
-  const r = clamp((num >> 16) + amount);
-  const g = clamp(((num >> 8) & 0xff) + amount);
-  const b = clamp((num & 0xff) + amount);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 }

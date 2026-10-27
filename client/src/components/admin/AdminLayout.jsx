@@ -1,5 +1,8 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../Logo';
+import ThemeToggle from '../ThemeToggle';
+import PaperHills from '../art/PaperHills';
 
 // The frame around every admin page: a dark sidebar (a top bar on phones) + the page.
 export default function AdminLayout() {
@@ -15,7 +18,7 @@ export default function AdminLayout() {
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <img src="/favicon.svg" alt="" width="30" height="30" />
+          <Logo size={34} />
           <div>
             <strong>BookVerse</strong>
             <span>Admin</span>
@@ -28,9 +31,11 @@ export default function AdminLayout() {
           <NavLink to="/admin/users">👥 Users</NavLink>
         </nav>
         <div className="admin-account">
-          <span title={user.email}>{user.name}</span>
-          <button className="btn btn-small admin-logout" onClick={handleLogout}>Log out</button>
+          <span className="admin-name" title={user.email}>{user.name}</span>
+          <ThemeToggle />
+          <button className="btn btn-small btn-ghost admin-logout" onClick={handleLogout}>Log out</button>
         </div>
+        <PaperHills className="admin-sidebar-hills" />
       </aside>
       <main className="admin-content">
         <Outlet />

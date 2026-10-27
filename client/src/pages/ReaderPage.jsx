@@ -140,14 +140,17 @@ export default function ReaderPage() {
             <BuyBox bookId={book._id} onBought={handleBought} />
           </div>
         ) : (
-          <>
+          <div className="reader-page page-turn" key={number}>
+            <span className="reader-kicker">Chapter {number}</span>
             <h1 className="reader-title">{page.title}</h1>
+            <div className="ornament" aria-hidden="true">❦</div>
             <div className="reader-text" style={{ fontSize }}>
               {page.content.split('\n\n').map((para, i) => (
                 <p key={i}>{para}</p>
               ))}
             </div>
-          </>
+            {number === total && <div className="ornament reader-end" aria-hidden="true">~ The End ~</div>}
+          </div>
         )}
 
         <nav className="reader-nav">
